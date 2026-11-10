@@ -85,3 +85,4 @@ To host the site on `bhoomik-codes.github.io/founders-connect`:
    - Branch: `main` / folder: `/(root)`
    - Click **Save**
    - Your site will be live at `https://bhoomik-codes.github.io/founders-connect` within 1-2 minutes!
+
