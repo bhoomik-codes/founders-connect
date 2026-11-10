@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Founders Connect | Jaipur Startup & Founder Research Directory</title>
+  <meta name="description" content="Researching Jaipur's startup ecosystem and showcasing 90 potential founders across 9 fellow tracks for Founders Connect on 21st November.">
+  <meta name="theme-color" content="#0A0D14">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Founders Connect - Jaipur Startup Directory">
+  <meta property="og:description" content="Ecosystem research and 10 founders per fellow for Founders Connect event on 21st November.">
+  <meta property="og:type" content="website">
+
+  <!-- Google Fonts: Inter & Fira Code -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body>
+
+  <!-- Top Sticky Navigation Bar -->
+  <header class="site-header">
+    <div class="container nav-container">
+      <div class="brand-group">
+        <div class="brand-logo-mark" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <div class="brand-text-wrap">
+          <div class="brand-title">
+            <span>Founders Connect</span>
+            <span class="brand-badge">Jaipur Edition</span>
+          </div>
+          <span class="brand-sub">Startup & Founder Research Hub</span>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <div class="event-countdown-pill" title="Upcoming Event Date">
+          <span class="pulse-dot"></span>
+          <span>Event: <strong>21st November</strong></span>
+        </div>
+
+        <button id="export-csv-btn" class="btn-primary" title="Export Google Spreadsheet CSV">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+          <span>Export Sheet (CSV)</span>
+        </button>
+
+        <button id="theme-toggle-btn" class="btn-icon" aria-label="Toggle Dark and Light Mode" title="Toggle Theme">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/>
+            <line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/>
+            <line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Wrap -->
+  <main class="container">
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="hero-tag">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <span>Jaipur Startup & Founder Research Initiative</span>
+      </div>
+      <h1 class="hero-title text-gradient">
+        Jaipur Startup Ecosystem & Founder Directory
+      </h1>
+      <p class="hero-description">
+        Curated research by our fellow team for the upcoming <strong>Founders Connect</strong> event on <strong>21st November</strong>. Highlighting high-impact founders, innovative business models, past event participation, and targeted networking synergies across Rajasthan's Pink City.
+      </p>
+
+      <!-- Stat Metrics Ribbon -->
+      <div class="stats-ribbon">
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Total Leads Tracked</span>
+            <div class="stat-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+          </div>
+          <div id="stat-founders-count" class="stat-number">90</div>
+          <div class="stat-label">10 founders per fellow</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Fellow Researchers</span>
+            <div class="stat-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/></svg>
+            </div>
+          </div>
+          <div id="stat-fellows-count" class="stat-number">9</div>
+          <div class="stat-label">Collaborative team slots</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Verified Event Attendees</span>
+            <div class="stat-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></svg>
+            </div>
+          </div>
+          <div id="stat-events-count" class="stat-number">--</div>
+          <div class="stat-label">TiE, DigiFest & Conclaves</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Event Target Date</span>
+            <div class="stat-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+          </div>
+          <div class="stat-number" style="font-size: 1.5rem;">21 Nov</div>
+          <div class="stat-label">Founders Connect Meetup</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Team Members Switcher Section (8 to 9 Fellows) -->
+    <section class="fellows-section" aria-labelledby="fellows-heading">
+      <div class="section-head">
+        <div class="section-title-wrap">
+          <h2 id="fellows-heading">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--color-jaipur);"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span>Research Fellows & Team Leads</span>
+          </h2>
+          <p class="section-subtitle">Select any team fellow to inspect their 10 researched startup leads, or view all combined leads.</p>
+        </div>
+      </div>
+
+      <!-- Fellows Tab Carousel -->
+      <div id="fellows-carousel" class="fellows-carousel" role="tablist" aria-label="Fellow Selection Tabs">
+        <!-- Injected dynamically by app.js -->
+      </div>
+    </section>
+
+    <!-- Controls & Filters Bar -->
+    <section class="controls-bar" aria-label="Directory Filters and Controls">
+      <div class="search-and-view-row">
+        <!-- Live Search -->
+        <div class="search-box-wrap">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="search" id="search-input" class="search-input" placeholder="Search by founder, startup, business model, or sector..." aria-label="Search founders directory">
+          <button id="search-clear-btn" class="search-clear-btn" aria-label="Clear search">✕</button>
+        </div>
+
+        <!-- View Mode Switch & Attended Filter -->
+        <div class="view-and-sort-group">
+          <button id="attended-filter-btn" class="event-attended-toggle" title="Filter by event attendance history">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <span>Attended Events Only</span>
+          </button>
+
+          <div class="view-toggle-group">
+            <button id="view-grid-btn" class="view-toggle-btn active" title="Grid View" aria-label="Grid View">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+              <span>Grid</span>
+            </button>
+            <button id="view-table-btn" class="view-toggle-btn" title="Table View" aria-label="Table View">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+              <span>Table</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sector Filter Chips -->
+      <div id="sector-chips-wrap" class="chips-filter-row" role="group" aria-label="Filter by Sector">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <!-- Status Bar (Counter) -->
+    <div class="directory-status-bar">
+      <div>
+        Showing <strong id="visible-count">0</strong> of <strong id="total-count">0</strong> founders in Jaipur directory
+      </div>
+      <div style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono);">
+        Founders Connect • Verified Data
+      </div>
+    </div>
+
+    <!-- Founders Grid View -->
+    <section id="founders-grid" class="founders-grid" aria-label="Founders Directory Grid">
+      <!-- Rendered dynamically by app.js -->
+    </section>
+
+    <!-- Founders Table View (Spreadsheet Style) -->
+    <section id="founders-table-container" class="founders-table-container" aria-label="Founders Directory Table">
+      <table class="founders-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Founder & Title</th>
+            <th>Company & Link</th>
+            <th>Sector</th>
+            <th>Event History</th>
+            <th>Business Model</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="founders-table-body">
+          <!-- Rendered dynamically by app.js -->
+        </tbody>
+      </table>
+    </section>
+
+  </main>
+
+  <!-- Founder Research Detail Modal Drawer -->
+  <div id="modal-overlay" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <span id="modal-title" style="font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-primary-light);">
+          Founder Research Dossier
+        </span>
+        <button id="modal-close-btn" class="modal-close-btn" aria-label="Close modal">✕</button>
+      </div>
+      <div id="modal-content-container" class="modal-body">
+        <!-- Injected dynamically on click -->
+      </div>
+      <div class="modal-footer">
+        <span style="font-size: 0.78rem; color: var(--text-muted);">
+          Founders Connect • Jaipur Ecosystem Research
+        </span>
+        <button onclick="document.getElementById('modal-overlay').classList.remove('open'); document.body.style.overflow='';" class="btn-secondary" style="font-size: 0.8rem; padding: 6px 14px;">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast-notice" class="toast-notice" role="status" aria-live="polite"></div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div>
+        <strong>Founders Connect Jaipur</strong> • 21st November Research Portal
+      </div>
+      <div style="font-family: var(--font-mono); font-size: 0.78rem;">
+        Target URL: <a href="https://bhoomik-codes.github.io/founders-connect" target="_blank" style="color: var(--color-primary-light); text-decoration: underline;">bhoomik-codes.github.io/founders-connect</a>
+      </div>
+      <div style="color: var(--text-muted); font-size: 0.78rem;">
+        Built with UI/UX Pro Max • 9 Fellow Tracks
+      </div>
+    </div>
+  </footer>
+
+  <!-- App Controller Script -->
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>
+
