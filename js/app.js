@@ -351,7 +351,7 @@ function renderDirectoryViews() {
         <td style="font-family: var(--font-mono); font-size: 0.76rem;">#${idx + 1}</td>
         <td>
           <div style="display: flex; align-items: center; gap: 10px;">
-            <img src="${lead.photoUrl}" alt="${lead.founderName}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;" />
+            <img src="${lead.photoUrl}" alt="${lead.founderName}" style="width: 32px; height: 32px; object-fit: cover; border: 1px solid var(--border-strong);" />
             <div>
               <div style="font-weight: 700; color: var(--text-primary);">${lead.founderName}</div>
               <div style="font-size: 0.72rem; color: var(--text-muted);">${lead.designation}</div>
@@ -365,7 +365,7 @@ function renderDirectoryViews() {
         <td><span class="badge-city">${lead.sector}</span></td>
         <td style="max-width: 240px; font-size: 0.76rem; color: var(--text-secondary);">${lead.businessModel.slice(0, 75)}...</td>
         <td>
-          <span class="badge-city" style="background: ${lead.attendedEvents ? 'var(--color-success-bg)' : 'var(--bg-tertiary)'}; color: ${lead.attendedEvents ? 'var(--color-success)' : 'var(--text-muted)'};">
+          <span class="badge-city" style="background: ${lead.attendedEvents ? 'var(--c-sharp-lime)' : 'var(--bg-surface)'}; color: ${lead.attendedEvents ? 'var(--c-deep-pine)' : 'var(--text-muted)'};">
             ${lead.attendedEvents ? 'Verified' : 'Pending'}
           </span>
         </td>
@@ -483,48 +483,48 @@ function openFullDossierModal() {
   if (!lead || !elements.modalOverlay || !elements.modalContentContainer) return;
 
   elements.modalContentContainer.innerHTML = `
-    <div style="display: flex; gap: 18px; align-items: flex-start; padding-bottom: 18px; border-bottom: 1px solid var(--border-subtle);">
-      <img src="${lead.photoUrl}" alt="${lead.founderName}" style="width: 72px; height: 72px; border-radius: var(--radius-md); object-fit: cover; border: 2px solid var(--color-primary);" />
+    <div style="display: flex; gap: 16px; align-items: flex-start; padding-bottom: 16px; border-bottom: 2px solid var(--border-strong);">
+      <img src="${lead.photoUrl}" alt="${lead.founderName}" style="width: 72px; height: 72px; object-fit: cover; border: 2px solid var(--c-sharp-lime);" />
       <div>
-        <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--text-primary);">${lead.founderName}</h2>
-        <div style="font-size: 0.88rem; color: var(--text-muted);">${lead.designation} • <strong>${lead.companyName}</strong></div>
+        <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em;">${lead.founderName}</h2>
+        <div style="font-size: 0.84rem; color: var(--c-mint-teal); font-weight: 600;">${lead.designation} • <strong>${lead.companyName}</strong></div>
         <div style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;">
           <span class="badge-city">${lead.sector}</span>
-          <span class="badge-city" style="color: var(--color-success); border-color: rgba(16, 185, 129, 0.3);">
+          <span class="badge-city" style="background: var(--c-sharp-lime); color: var(--c-deep-pine); border-color: var(--c-sharp-lime);">
             ${lead.eventAttendanceStatus}
           </span>
         </div>
       </div>
     </div>
 
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-      <div style="background: var(--bg-card-solid); padding: 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
-        <strong style="font-size: 0.74rem; text-transform: uppercase; color: var(--color-primary-light); display: block; margin-bottom: 6px;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+      <div style="background: var(--bg-card); padding: 14px; border: 1.5px solid var(--border-strong);">
+        <strong style="font-size: 0.72rem; font-family: var(--font-mono); text-transform: uppercase; color: var(--c-mint-teal); display: block; margin-bottom: 6px;">
           Office Address & Location:
         </strong>
-        <p style="font-size: 0.84rem; color: var(--text-secondary);">${lead.address || 'Jaipur, Rajasthan'}</p>
+        <p style="font-size: 0.82rem; color: var(--text-secondary); font-family: var(--font-mono);">${lead.address || 'Jaipur, Rajasthan'}</p>
       </div>
 
-      <div style="background: var(--bg-card-solid); padding: 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
-        <strong style="font-size: 0.74rem; text-transform: uppercase; color: var(--color-primary-light); display: block; margin-bottom: 6px;">
+      <div style="background: var(--bg-card); padding: 14px; border: 1.5px solid var(--border-strong);">
+        <strong style="font-size: 0.72rem; font-family: var(--font-mono); text-transform: uppercase; color: var(--c-mint-teal); display: block; margin-bottom: 6px;">
           Public Contact:
         </strong>
-        <p style="font-size: 0.84rem; color: var(--text-secondary);">${lead.publicContact || 'Available via corporate channel'}</p>
+        <p style="font-size: 0.82rem; color: var(--text-secondary);">${lead.publicContact || 'Available via corporate channel'}</p>
       </div>
     </div>
 
-    <div style="background: var(--bg-card-solid); padding: 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
-      <strong style="font-size: 0.74rem; text-transform: uppercase; color: var(--color-accent); display: block; margin-bottom: 6px;">
+    <div style="background: var(--bg-card); padding: 14px; border: 1.5px solid var(--border-strong);">
+      <strong style="font-size: 0.72rem; font-family: var(--font-mono); text-transform: uppercase; color: var(--c-sharp-lime); display: block; margin-bottom: 6px;">
         Business Model & Monetization:
       </strong>
-      <p style="font-size: 0.86rem; color: var(--text-secondary); line-height: 1.6;">${lead.businessModel}</p>
+      <p style="font-size: 0.84rem; color: var(--text-secondary); line-height: 1.6;">${lead.businessModel}</p>
     </div>
 
-    <div style="background: var(--bg-card-solid); padding: 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); border-left: 3px solid var(--color-jaipur);">
-      <strong style="font-size: 0.74rem; text-transform: uppercase; color: var(--color-jaipur); display: block; margin-bottom: 6px;">
+    <div style="background: var(--bg-card); padding: 14px; border: 1.5px solid var(--border-strong); border-left: 4px solid var(--c-sharp-lime);">
+      <strong style="font-size: 0.72rem; font-family: var(--font-mono); text-transform: uppercase; color: var(--c-sharp-lime); display: block; margin-bottom: 6px;">
         Why Relevant to Founders Connect (21st Nov):
       </strong>
-      <p style="font-size: 0.86rem; color: var(--text-secondary); line-height: 1.6;">${lead.relevanceToFoundersConnect}</p>
+      <p style="font-size: 0.84rem; color: var(--text-secondary); line-height: 1.6;">${lead.relevanceToFoundersConnect}</p>
     </div>
 
     <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 10px;">
