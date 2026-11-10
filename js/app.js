@@ -1,110 +1,76 @@
 /**
  * Founders Connect - Application Controller
- * Matches User Wireframe:
- * - Top Global Search Bar (Name, Company, Sector, Address)
- * - Left "Pod Members" Sidebar with scroll down
- * - Main Lead Profile Stage Canvas with surrounding cards & navigation arrows
+ * Editorial Light Theme with Instagram Reels-Inspired Discovery Carousel
  */
 
 import { EVENT_DETAILS, SECTORS, TEAM_MEMBERS, FOUNDERS_DATA } from './founders-data.js';
 
 // Application State
 const state = {
-  currentFellowId: 'bhoomik', // Active pod member ID
-  currentLeadIndex: 0,        // Active lead (0 to 9)
-  viewMode: 'stage',          // 'stage' | 'grid' | 'table'
+  currentFellowId: 'bhoomik', // Active pod fellow ID
+  currentLeadIndex: 0,        // Active lead index (0 to 9)
+  viewMode: 'reels',          // 'reels' | 'gallery' | 'table'
+  selectedSector: 'All Sectors',
   searchQuery: '',
-  theme: localStorage.getItem('fc_theme') || 'dark'
+  // Carousel Drag State
+  drag: {
+    isDragging: false,
+    startX: 0,
+    currentX: 0
+  }
 };
 
 // DOM References
 const elements = {
-  // Theme & Global
-  themeToggleBtn: document.getElementById('theme-toggle-btn'),
-  toastNotice: document.getElementById('toast-notice'),
-  exportCsvBtn: document.getElementById('export-csv-btn'),
-
-  // Top Search
-  globalSearchInput: document.getElementById('global-search-input'),
+  // Search
+  spotlightSearchInput: document.getElementById('spotlight-search-input'),
   searchClearBtn: document.getElementById('search-clear-btn'),
-  searchResultsDropdown: document.getElementById('search-results-dropdown'),
+  searchResultsTray: document.getElementById('search-results-tray'),
 
-  // Left Pod Sidebar
-  podMembersList: document.getElementById('pod-members-list'),
-  podScrollDownBtn: document.getElementById('pod-scroll-down-btn'),
+  // Actions
+  copySheetsBtn: document.getElementById('copy-sheets-btn'),
+  exportCsvBtn: document.getElementById('export-csv-btn'),
+  toastBadge: document.getElementById('toast-badge'),
 
-  // Stage Controls
-  activeFellowName: document.getElementById('active-fellow-name'),
-  activeFellowRole: document.getElementById('active-fellow-role'),
-  activeFellowFocus: document.getElementById('active-fellow-focus'),
-  leadStepperPills: document.getElementById('lead-stepper-pills'),
-  viewStageBtn: document.getElementById('view-stage-btn'),
-  viewGridBtn: document.getElementById('view-grid-btn'),
+  // Pod Story Dock
+  podStoriesList: document.getElementById('pod-stories-list'),
+
+  // Controls & Filters
+  sectorFilterPills: document.getElementById('sector-filter-pills'),
+  viewReelsBtn: document.getElementById('view-reels-btn'),
+  viewGalleryBtn: document.getElementById('view-gallery-btn'),
   viewTableBtn: document.getElementById('view-table-btn'),
 
-  // Stage Canvas (Wireframe Box Layout)
-  leadProfileCanvas: document.getElementById('lead-profile-canvas'),
-  canvasPrevBtn: document.getElementById('canvas-prev-btn'),
-  canvasNextBtn: document.getElementById('canvas-next-btn'),
+  // Reels Stage & Carousel
+  reelsStageWrapper: document.getElementById('reels-stage-wrapper'),
+  storyProgressStrip: document.getElementById('story-progress-strip'),
+  reelsCarouselTrackContainer: document.getElementById('reels-carousel-track-container'),
+  reelsCarouselTrack: document.getElementById('reels-carousel-track'),
+  carouselPrevBtn: document.getElementById('carousel-prev-btn'),
+  carouselNextBtn: document.getElementById('carousel-next-btn'),
 
-  // Stage Elements
-  stageFounderName: document.getElementById('stage-founder-name'),
-  stageFounderDesignation: document.getElementById('stage-founder-designation'),
-  stageCompanyName: document.getElementById('stage-company-name'),
-  stageSectorTag: document.getElementById('stage-sector-tag'),
-  stageFounderAddress: document.getElementById('stage-founder-address'),
-  stageWebsiteLink: document.getElementById('stage-website-link'),
-  stageLinkedinLink: document.getElementById('stage-linkedin-link'),
-  stageFullDossierBtn: document.getElementById('stage-full-dossier-btn'),
+  // Alternative Views
+  galleryGridWrapper: document.getElementById('gallery-grid-wrapper'),
+  tableViewWrapper: document.getElementById('table-view-wrapper'),
+  tableViewBody: document.getElementById('table-view-body'),
 
-  stageBusinessDesc: document.getElementById('stage-business-desc'),
-  stageBusinessModel: document.getElementById('stage-business-model'),
-
-  stagePortraitImg: document.getElementById('stage-portrait-img'),
-  stageLeadProfileTag: document.getElementById('stage-lead-profile-tag'),
-  stageLeadIndexBadge: document.getElementById('stage-lead-index-badge'),
-  stageFellowCredit: document.getElementById('stage-fellow-credit'),
-  stageContactInfo: document.getElementById('stage-contact-info'),
-  stageTagsWrap: document.getElementById('stage-tags-wrap'),
-
-  stageEventsList: document.getElementById('stage-events-list'),
-  stageRelevanceText: document.getElementById('stage-relevance-text'),
-
-  // Alternative Directory Views
-  directoryViewWrapper: document.getElementById('directory-view-wrapper'),
-  foundersGridContainer: document.getElementById('founders-grid-container'),
-  foundersTableContainer: document.getElementById('founders-table-container'),
-  foundersTableBody: document.getElementById('founders-table-body'),
-
-  // Modal
-  modalOverlay: document.getElementById('modal-overlay'),
-  modalCloseBtn: document.getElementById('modal-close-btn'),
-  modalContentContainer: document.getElementById('modal-content-container')
+  // Slide-Over Modal Drawer
+  slideoverModalBackdrop: document.getElementById('slideover-modal-backdrop'),
+  slideoverCloseBtn: document.getElementById('slideover-close-btn'),
+  slideoverContentBody: document.getElementById('slideover-content-body')
 };
 
 // Initialize Application
 function init() {
-  applyTheme(state.theme);
-  renderPodMembers();
-  renderLeadStepper();
-  updateStageLeadProfile();
-  renderDirectoryViews();
+  renderPodStories();
+  renderSectorPills();
+  renderReelsCarousel();
+  renderGalleryGrid();
+  renderTableView();
   attachEventListeners();
 }
 
-// Theme Switcher
-function applyTheme(theme) {
-  state.theme = theme;
-  document.documentElement.setAttribute('data-theme', theme);
-  localStorage.setItem('fc_theme', theme);
-}
-
-function toggleTheme() {
-  const next = state.theme === 'dark' ? 'light' : 'dark';
-  applyTheme(next);
-}
-
-// Get all 90 leads combined
+// Get all leads flat (90 total)
 function getAllLeadsFlat() {
   let list = [];
   Object.keys(FOUNDERS_DATA).forEach(fellowId => {
@@ -113,14 +79,14 @@ function getAllLeadsFlat() {
   return list;
 }
 
-// Get active fellow's leads
+// Get active fellow's leads (10 leads)
 function getActiveFellowLeads() {
   return FOUNDERS_DATA[state.currentFellowId] || [];
 }
 
-// Render Left Sidebar: "Pod Members"
-function renderPodMembers() {
-  if (!elements.podMembersList) return;
+// Render Pod Story Dock (Instagram Stories / Category bar)
+function renderPodStories() {
+  if (!elements.podStoriesList) return;
 
   let html = '';
   TEAM_MEMBERS.forEach(fellow => {
@@ -129,450 +95,632 @@ function renderPodMembers() {
 
     html += `
       <div 
-        class="pod-member-btn ${isActive ? 'active' : ''}" 
+        class="fellow-story-pill ${isActive ? 'active' : ''}" 
         data-fellow-id="${fellow.id}"
         role="button"
         tabindex="0"
-        title="${fellow.name} (${fellow.focus})"
+        title="${fellow.name} • ${fellow.focus}"
       >
-        <div class="pod-member-avatar-wrap">
-          <img src="${fellow.photoUrl}" alt="${fellow.name}" class="pod-member-photo" loading="lazy" />
-          <span class="pod-member-status-indicator" title="Status: Verified (10/10)"></span>
+        <div class="fellow-story-avatar-wrap">
+          <img src="${fellow.photoUrl}" alt="${fellow.name}" class="fellow-story-avatar" loading="lazy" />
         </div>
-        <div class="pod-member-name">${fellow.name}</div>
-        <div class="pod-member-leads-tag">${leads.length}/10 Leads</div>
+        <div class="fellow-story-meta">
+          <span class="fellow-story-name">${fellow.name}</span>
+          <span class="fellow-story-focus">${fellow.focus.split('&')[0].trim()} • <strong>${leads.length}/10</strong></span>
+        </div>
       </div>
     `;
   });
 
-  elements.podMembersList.innerHTML = html;
+  elements.podStoriesList.innerHTML = html;
 
-  // Click handlers for Pod Member avatars
-  elements.podMembersList.querySelectorAll('[data-fellow-id]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      state.currentFellowId = btn.dataset.fellowId;
+  // Click handlers
+  elements.podStoriesList.querySelectorAll('[data-fellow-id]').forEach(pill => {
+    pill.addEventListener('click', () => {
+      state.currentFellowId = pill.dataset.fellowId;
       state.currentLeadIndex = 0; // Reset to 1st lead of this fellow
-      renderPodMembers();
-      renderLeadStepper();
-      updateStageLeadProfile();
-      renderDirectoryViews();
+      renderPodStories();
+      renderReelsCarousel();
+      renderGalleryGrid();
+      renderTableView();
+      showToast(`Browsing research by ${pill.querySelector('.fellow-story-name').textContent}`);
     });
 
-    btn.addEventListener('keydown', (e) => {
+    pill.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        btn.click();
+        pill.click();
       }
     });
   });
 }
 
-// Render 1 to 10 Lead Stepper Selector
-function renderLeadStepper() {
-  if (!elements.leadStepperPills) return;
+// Render Sector Filter Pills
+function renderSectorPills() {
+  if (!elements.sectorFilterPills) return;
+
+  elements.sectorFilterPills.innerHTML = SECTORS.map(sec => `
+    <button class="filter-chip-btn ${state.selectedSector === sec ? 'active' : ''}" data-sector="${sec}">
+      ${sec}
+    </button>
+  `).join('');
+
+  elements.sectorFilterPills.querySelectorAll('[data-sector]').forEach(chip => {
+    chip.addEventListener('click', () => {
+      state.selectedSector = chip.dataset.sector;
+      renderSectorPills();
+      renderGalleryGrid();
+      renderTableView();
+    });
+  });
+}
+
+// Render Instagram Reels Story Progress Strip
+function renderStoryProgressStrip() {
+  if (!elements.storyProgressStrip) return;
 
   const leads = getActiveFellowLeads();
   let html = '';
 
   for (let i = 0; i < leads.length; i++) {
-    const isActive = state.currentLeadIndex === i;
+    const isCompleted = i < state.currentLeadIndex;
+    const isActive = i === state.currentLeadIndex;
+    const cls = isActive ? 'active' : (isCompleted ? 'completed' : '');
+
     html += `
-      <button class="lead-step-pill ${isActive ? 'active' : ''}" data-lead-idx="${i}" title="View Lead #${i + 1}">
-        ${i + 1}
-      </button>
+      <div 
+        class="story-segment ${cls}" 
+        data-segment-idx="${i}" 
+        title="Jump to Lead #${i + 1}"
+      ></div>
     `;
   }
 
-  elements.leadStepperPills.innerHTML = html;
+  elements.storyProgressStrip.innerHTML = html;
 
-  elements.leadStepperPills.querySelectorAll('[data-lead-idx]').forEach(pill => {
-    pill.addEventListener('click', () => {
-      state.currentLeadIndex = parseInt(pill.dataset.leadIdx, 10);
-      renderLeadStepper();
-      updateStageLeadProfile();
+  elements.storyProgressStrip.querySelectorAll('[data-segment-idx]').forEach(seg => {
+    seg.addEventListener('click', () => {
+      state.currentLeadIndex = parseInt(seg.dataset.segmentIdx, 10);
+      renderReelsCarousel();
     });
   });
 }
 
-// Update the Main Stage Canvas with the active lead profile
-function updateStageLeadProfile() {
-  const fellow = TEAM_MEMBERS.find(f => f.id === state.currentFellowId) || TEAM_MEMBERS[0];
+// Render Reels Active Founder Card
+function renderReelsCarousel() {
+  renderStoryProgressStrip();
+
   const leads = getActiveFellowLeads();
   const lead = leads[state.currentLeadIndex] || leads[0];
+  if (!lead || !elements.reelsCarouselTrack) return;
 
-  if (!lead) return;
+  elements.reelsCarouselTrack.innerHTML = `
+    <article class="reel-founder-card" data-founder-id="${lead.id}">
+      
+      <!-- Card Left: Portrait, Badges & White Title Overlay -->
+      <div class="reel-hero-column">
+        <img src="${lead.photoUrl}" alt="${lead.founderName}" class="reel-portrait-image" />
+        <div class="reel-portrait-gradient-overlay"></div>
 
-  // Update top active fellow meta
-  if (elements.activeFellowName) elements.activeFellowName.textContent = fellow.name;
-  if (elements.activeFellowRole) elements.activeFellowRole.textContent = fellow.role;
-  if (elements.activeFellowFocus) elements.activeFellowFocus.textContent = fellow.focus;
+        <div class="reel-portrait-top-badges">
+          <span class="reel-lead-badge">LEAD #${state.currentLeadIndex + 1} OF ${leads.length}</span>
+          <span class="reel-metric-pill">${lead.keyMetric || lead.sector}</span>
+        </div>
 
-  // Card 1: Top-Left Card (Founder & Startup Profile)
-  if (elements.stageFounderName) elements.stageFounderName.textContent = lead.founderName;
-  if (elements.stageFounderDesignation) elements.stageFounderDesignation.textContent = lead.designation;
-  if (elements.stageCompanyName) elements.stageCompanyName.textContent = lead.companyName;
-  if (elements.stageSectorTag) elements.stageSectorTag.textContent = lead.sector;
-  if (elements.stageFounderAddress) elements.stageFounderAddress.textContent = lead.address || 'Jaipur, Rajasthan';
+        <div class="reel-portrait-bottom-info">
+          <div class="reel-location-row">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>${lead.address || 'Jaipur, Rajasthan'}</span>
+          </div>
+          <h2 class="reel-founder-title-white">${lead.founderName}</h2>
+          <p class="reel-designation-white">${lead.designation}</p>
+        </div>
+      </div>
 
-  if (elements.stageWebsiteLink) elements.stageWebsiteLink.href = lead.website;
-  if (elements.stageLinkedinLink) elements.stageLinkedinLink.href = lead.linkedinUrl;
+      <!-- Card Right: Editorial Story & Research Details -->
+      <div class="reel-editorial-column">
+        
+        <!-- Header Row -->
+        <div class="reel-editorial-head">
+          <div class="reel-company-identity">
+            <div class="reel-company-name-row">
+              <span class="reel-company-name">${lead.companyName}</span>
+              <a href="${lead.website}" target="_blank" rel="noopener noreferrer" class="reel-company-link-btn" title="Visit company website">
+                <span>Website</span>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>
+              </a>
+            </div>
+            <span class="reel-fellow-attribution">Researched by <strong>${lead.fellowName}</strong> for Founders Connect</span>
+          </div>
+          <span class="reel-sector-tag">${lead.sector}</span>
+        </div>
 
-  // Card 2: Top-Right Card (Business Model & Monetization)
-  if (elements.stageBusinessDesc) elements.stageBusinessDesc.textContent = lead.companySummary || lead.businessModel;
-  if (elements.stageBusinessModel) elements.stageBusinessModel.textContent = lead.businessModel;
+        <!-- Section 1: Overview & Vision -->
+        <div class="reel-story-section">
+          <span class="reel-section-label">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Company Vision & Jaipur Roots
+          </span>
+          <p class="reel-bio-text">${lead.companySummary || lead.businessModel}</p>
+        </div>
 
-  // Center Bottom: Founder Portrait Area
-  if (elements.stagePortraitImg) {
-    elements.stagePortraitImg.src = lead.photoUrl;
-    elements.stagePortraitImg.alt = lead.founderName;
+        <!-- Section 2: Business Model -->
+        <div class="reel-story-section">
+          <span class="reel-section-label">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Business Model & Monetization
+          </span>
+          <div class="reel-business-model-box">
+            ${lead.businessModel}
+          </div>
+        </div>
+
+        <!-- Section 3: Event Relevance & Credentials -->
+        <div class="reel-relevance-card">
+          <span class="reel-relevance-title">✦ Why Relevant for Founders Connect (21st Nov)</span>
+          <p class="reel-relevance-text">${lead.relevanceToFoundersConnect}</p>
+        </div>
+
+        <!-- Card Footer -->
+        <div class="reel-card-footer">
+          <div class="reel-social-group">
+            <a href="${lead.linkedinUrl}" target="_blank" rel="noopener noreferrer" class="social-circle-btn" title="LinkedIn Profile" aria-label="LinkedIn Profile">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+            </a>
+            <span style="font-size: 0.74rem; color: var(--text-muted); font-family: var(--font-mono); margin-left: 4px;">
+              Contact: ${lead.publicContact.split('/')[0].trim()}
+            </span>
+          </div>
+
+          <button id="open-dossier-btn" class="btn-pill-primary" style="padding: 7px 14px; font-size: 0.78rem;">
+            <span>View Full Dossier</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </button>
+        </div>
+
+      </div>
+    </article>
+  `;
+
+  // Bind Open Dossier Button
+  const dossierBtn = document.getElementById('open-dossier-btn');
+  if (dossierBtn) {
+    dossierBtn.addEventListener('click', () => openSlideoverDossier(lead));
   }
-  if (elements.stageLeadIndexBadge) {
-    elements.stageLeadIndexBadge.textContent = `Lead #${state.currentLeadIndex + 1} of ${leads.length}`;
-  }
-  if (elements.stageFellowCredit) {
-    elements.stageFellowCredit.innerHTML = `Researched by <strong>${lead.fellowName}</strong>`;
-  }
-  if (elements.stageContactInfo) {
-    elements.stageContactInfo.innerHTML = `Contact: <strong>${lead.publicContact || 'Available on request'}</strong>`;
-  }
-
-  // Tags
-  if (elements.stageTagsWrap) {
-    elements.stageTagsWrap.innerHTML = (lead.tags || ['Jaipur Startup', 'Founders Connect'])
-      .map(tag => `<span class="badge-city" style="font-size: 0.68rem;">${tag}</span>`)
-      .join('');
-  }
-
-  // Card 3: Bottom-Right Card (Event Participation & Relevance)
-  if (elements.stageEventsList) {
-    if (lead.previousEvents && lead.previousEvents.length) {
-      elements.stageEventsList.innerHTML = lead.previousEvents
-        .map(ev => `<li class="event-history-item"><span class="event-bullet-icon">✦</span> ${ev}</li>`)
-        .join('');
-    } else {
-      elements.stageEventsList.innerHTML = `
-        <li class="event-history-item"><span class="event-bullet-icon">✦</span> Attended Regional Startup Meetups & Investor Summits</li>
-      `;
-    }
-  }
-
-  if (elements.stageRelevanceText) {
-    elements.stageRelevanceText.textContent = lead.relevanceToFoundersConnect;
-  }
-
-  // Update Stepper Pill active class
-  renderLeadStepper();
 }
 
-// Next Lead (Right Arrow ->)
+// Next Lead
 function nextLead() {
   const leads = getActiveFellowLeads();
   state.currentLeadIndex = (state.currentLeadIndex + 1) % leads.length;
-  updateStageLeadProfile();
+  renderReelsCarousel();
 }
 
-// Previous Lead (Left Arrow <-)
+// Previous Lead
 function prevLead() {
   const leads = getActiveFellowLeads();
   state.currentLeadIndex = (state.currentLeadIndex - 1 + leads.length) % leads.length;
-  updateStageLeadProfile();
+  renderReelsCarousel();
 }
 
-// Switch View Modes: 'stage' | 'grid' | 'table'
+// Render Airbnb-style Gallery Grid
+function renderGalleryGrid() {
+  if (!elements.galleryGridWrapper) return;
+
+  let leads = getActiveFellowLeads();
+
+  if (state.selectedSector !== 'All Sectors') {
+    leads = leads.filter(l => l.sector === state.selectedSector);
+  }
+
+  if (leads.length === 0) {
+    elements.galleryGridWrapper.innerHTML = `
+      <div style="grid-column: 1 / -1; padding: 48px; text-align: center; background: #FFFFFF; border-radius: var(--radius-lg); border: 1px dashed var(--border-medium);">
+        <p style="font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">No founders in this category</p>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">Try selecting "All Sectors" to see all research leads.</p>
+      </div>
+    `;
+    return;
+  }
+
+  elements.galleryGridWrapper.innerHTML = leads.map(lead => `
+    <article class="gallery-founder-card" data-gallery-founder-id="${lead.id}">
+      <div class="gallery-image-frame">
+        <img src="${lead.photoUrl}" alt="${lead.founderName}" class="gallery-founder-img" loading="lazy" />
+        <span class="reel-lead-badge" style="position: absolute; top: 12px; left: 12px;">${lead.keyMetric || lead.sector}</span>
+      </div>
+      <div class="gallery-card-body">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+          <div>
+            <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em;">${lead.founderName}</h3>
+            <span style="font-size: 0.76rem; color: var(--color-emerald); font-weight: 600;">${lead.designation}</span>
+          </div>
+          <span class="reel-sector-tag">${lead.sector.split('&')[0].trim()}</span>
+        </div>
+        <div style="font-size: 0.88rem; font-weight: 700; color: var(--text-primary); margin-top: 2px;">
+          ${lead.companyName}
+        </div>
+        <div style="font-size: 0.74rem; color: var(--text-muted); display: flex; align-items: center; gap: 4px;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>${lead.address || 'Jaipur, Rajasthan'}</span>
+        </div>
+        <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-top: 4px;">
+          ${lead.businessModel}
+        </p>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 10px; border-top: 1px solid var(--border-subtle);">
+          <span style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono);">By ${lead.fellowName.split(' ')[0]}</span>
+          <button class="btn-pill-secondary" style="font-size: 0.74rem; padding: 4px 10px;">Details ↗</button>
+        </div>
+      </div>
+    </article>
+  `).join('');
+
+  elements.galleryGridWrapper.querySelectorAll('[data-gallery-founder-id]').forEach(card => {
+    card.addEventListener('click', () => {
+      const all = getAllLeadsFlat();
+      const lead = all.find(l => l.id === card.dataset.galleryFounderId);
+      if (lead) openSlideoverDossier(lead);
+    });
+  });
+}
+
+// Render Spreadsheet Table View
+function renderTableView() {
+  if (!elements.tableViewBody) return;
+
+  let leads = getActiveFellowLeads();
+
+  if (state.selectedSector !== 'All Sectors') {
+    leads = leads.filter(l => l.sector === state.selectedSector);
+  }
+
+  elements.tableViewBody.innerHTML = leads.map((lead, idx) => `
+    <tr>
+      <td style="font-family: var(--font-mono); font-size: 0.76rem; color: var(--text-muted);">#${idx + 1}</td>
+      <td>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <img src="${lead.photoUrl}" alt="${lead.founderName}" style="width: 34px; height: 34px; border-radius: var(--radius-sm); object-fit: cover;" />
+          <div>
+            <div style="font-weight: 800; color: var(--text-primary);">${lead.founderName}</div>
+            <div style="font-size: 0.72rem; color: var(--text-muted);">${lead.designation}</div>
+          </div>
+        </div>
+      </td>
+      <td>
+        <div style="font-weight: 700; color: var(--text-primary);">${lead.companyName}</div>
+        <div style="font-size: 0.72rem; color: var(--text-muted);">${lead.address || 'Jaipur'}</div>
+      </td>
+      <td><span class="reel-sector-tag">${lead.sector}</span></td>
+      <td style="max-width: 260px; font-size: 0.78rem; color: var(--text-secondary); line-height: 1.45;">
+        ${lead.businessModel.slice(0, 80)}...
+      </td>
+      <td>
+        <span class="brand-badge" style="background: ${lead.attendedEvents ? 'var(--color-emerald-subtle)' : 'var(--bg-surface-subtle)'}; color: ${lead.attendedEvents ? 'var(--color-emerald)' : 'var(--text-muted)'};">
+          ${lead.attendedEvents ? 'Verified' : 'Pending'}
+        </span>
+      </td>
+      <td>
+        <button class="btn-pill-secondary" style="font-size: 0.72rem; padding: 4px 10px;" onclick="window.openDossierById('${lead.id}')">
+          View
+        </button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// Global handler for opening dossier from table
+window.openDossierById = function(id) {
+  const all = getAllLeadsFlat();
+  const lead = all.find(l => l.id === id);
+  if (lead) openSlideoverDossier(lead);
+};
+
+// Switch View Modes: 'reels' | 'gallery' | 'table'
 function setViewMode(mode) {
   state.viewMode = mode;
 
-  elements.viewStageBtn.classList.toggle('active', mode === 'stage');
-  elements.viewGridBtn.classList.toggle('active', mode === 'grid');
+  elements.viewReelsBtn.classList.toggle('active', mode === 'reels');
+  elements.viewGalleryBtn.classList.toggle('active', mode === 'gallery');
   elements.viewTableBtn.classList.toggle('active', mode === 'table');
 
-  if (mode === 'stage') {
-    elements.leadProfileCanvas.style.display = 'grid';
-    elements.directoryViewWrapper.classList.remove('active');
-  } else if (mode === 'grid') {
-    elements.leadProfileCanvas.style.display = 'none';
-    elements.directoryViewWrapper.classList.add('active');
-    elements.foundersGridContainer.style.display = 'grid';
-    elements.foundersTableContainer.style.display = 'none';
+  if (mode === 'reels') {
+    elements.reelsStageWrapper.style.display = 'flex';
+    elements.galleryGridWrapper.classList.remove('active');
+    elements.tableViewWrapper.classList.remove('active');
+  } else if (mode === 'gallery') {
+    elements.reelsStageWrapper.style.display = 'none';
+    elements.galleryGridWrapper.classList.add('active');
+    elements.tableViewWrapper.classList.remove('active');
+    renderGalleryGrid();
   } else if (mode === 'table') {
-    elements.leadProfileCanvas.style.display = 'none';
-    elements.directoryViewWrapper.classList.add('active');
-    elements.foundersGridContainer.style.display = 'none';
-    elements.foundersTableContainer.style.display = 'block';
+    elements.reelsStageWrapper.style.display = 'none';
+    elements.galleryGridWrapper.classList.remove('active');
+    elements.tableViewWrapper.classList.add('active');
+    renderTableView();
   }
 }
 
-// Render Directory Grid and Table views (for the active fellow or all)
-function renderDirectoryViews() {
-  const leads = getActiveFellowLeads();
+// Open Editorial Slide-Over Drawer Modal
+function openSlideoverDossier(lead) {
+  if (!elements.slideoverModalBackdrop || !elements.slideoverContentBody) return;
 
-  // Grid cards
-  if (elements.foundersGridContainer) {
-    elements.foundersGridContainer.innerHTML = leads.map((lead, idx) => `
-      <article class="founder-card" data-jump-lead="${idx}">
-        <div class="card-header-line">
-          <img src="${lead.photoUrl}" alt="${lead.founderName}" class="card-thumb-round" />
-          <div class="card-title-meta">
-            <h3 class="card-name-txt">${lead.founderName}</h3>
-            <span class="card-sub-txt">${lead.designation}</span>
-          </div>
-          <span class="badge-city" style="margin-left: auto;">${lead.sector}</span>
-        </div>
-        <div style="font-weight: 600; font-size: 0.88rem; color: var(--color-primary-light);">
-          ${lead.companyName}
-        </div>
-        <div style="font-size: 0.78rem; color: var(--text-muted); display: flex; align-items: center; gap: 4px;">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-          ${lead.address || 'Jaipur, Rajasthan'}
-        </div>
-        <p style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-          ${lead.businessModel}
-        </p>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 8px; border-top: 1px solid var(--border-subtle);">
-          <span style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono);">Lead #${idx + 1}</span>
-          <button class="btn-secondary" style="font-size: 0.72rem; padding: 4px 8px;">View Profile ↗</button>
-        </div>
-      </article>
-    `).join('');
-
-    elements.foundersGridContainer.querySelectorAll('[data-jump-lead]').forEach(card => {
-      card.addEventListener('click', () => {
-        state.currentLeadIndex = parseInt(card.dataset.jumpLead, 10);
-        setViewMode('stage');
-        updateStageLeadProfile();
-      });
-    });
-  }
-
-  // Table rows
-  if (elements.foundersTableBody) {
-    elements.foundersTableBody.innerHTML = leads.map((lead, idx) => `
-      <tr>
-        <td style="font-family: var(--font-mono); font-size: 0.76rem;">#${idx + 1}</td>
-        <td>
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <img src="${lead.photoUrl}" alt="${lead.founderName}" style="width: 32px; height: 32px; object-fit: cover; border: 1px solid var(--border-strong);" />
-            <div>
-              <div style="font-weight: 700; color: var(--text-primary);">${lead.founderName}</div>
-              <div style="font-size: 0.72rem; color: var(--text-muted);">${lead.designation}</div>
-            </div>
-          </div>
-        </td>
-        <td>
-          <div style="font-weight: 600;">${lead.companyName}</div>
-          <div style="font-size: 0.72rem; color: var(--text-muted);">${lead.address || 'Jaipur'}</div>
-        </td>
-        <td><span class="badge-city">${lead.sector}</span></td>
-        <td style="max-width: 240px; font-size: 0.76rem; color: var(--text-secondary);">${lead.businessModel.slice(0, 75)}...</td>
-        <td>
-          <span class="badge-city" style="background: ${lead.attendedEvents ? 'var(--c-sharp-lime)' : 'var(--bg-surface)'}; color: ${lead.attendedEvents ? 'var(--c-deep-pine)' : 'var(--text-muted)'};">
-            ${lead.attendedEvents ? 'Verified' : 'Pending'}
-          </span>
-        </td>
-        <td>
-          <button class="btn-secondary" style="font-size: 0.72rem; padding: 4px 8px;" onclick="window.selectAndShowLead(${idx})">
-            Select
-          </button>
-        </td>
-      </tr>
-    `).join('');
-  }
-}
-
-// Global hook for selecting from table
-window.selectAndShowLead = function(idx) {
-  state.currentLeadIndex = idx;
-  setViewMode('stage');
-  updateStageLeadProfile();
-};
-
-// Top Search Execution (Matches Image 2)
-// Searches: Name, Company, Sector, Address, etc.
-function handleGlobalSearch(query) {
-  state.searchQuery = query.trim().toLowerCase();
-
-  if (!elements.searchResultsDropdown) return;
-
-  if (state.searchQuery.length === 0) {
-    elements.searchResultsDropdown.classList.remove('active');
-    elements.searchResultsDropdown.innerHTML = '';
-    if (elements.searchClearBtn) elements.searchClearBtn.classList.remove('visible');
-    return;
-  }
-
-  if (elements.searchClearBtn) elements.searchClearBtn.classList.add('visible');
-
-  const allLeads = getAllLeadsFlat();
-  const matches = allLeads.filter(lead => {
-    const nameMatch = lead.founderName.toLowerCase().includes(state.searchQuery);
-    const companyMatch = lead.companyName.toLowerCase().includes(state.searchQuery);
-    const sectorMatch = lead.sector.toLowerCase().includes(state.searchQuery);
-    const addressMatch = (lead.address || '').toLowerCase().includes(state.searchQuery);
-    const fellowMatch = lead.fellowName.toLowerCase().includes(state.searchQuery);
-    const tagsMatch = (lead.tags || []).some(t => t.toLowerCase().includes(state.searchQuery));
-
-    return nameMatch || companyMatch || sectorMatch || addressMatch || fellowMatch || tagsMatch;
-  });
-
-  if (matches.length === 0) {
-    elements.searchResultsDropdown.innerHTML = `
-      <div style="padding: 16px; text-align: center; color: var(--text-muted); font-size: 0.85rem;">
-        No founders found matching "<strong>${query}</strong>" across name, company, sector, or Jaipur address.
-      </div>
-    `;
-    elements.searchResultsDropdown.classList.add('active');
-    return;
-  }
-
-  elements.searchResultsDropdown.innerHTML = matches.slice(0, 8).map(m => `
-    <div class="search-result-item" data-jump-fellow="${m.fellowId}" data-jump-lead-id="${m.id}">
-      <div class="search-result-left">
-        <img src="${m.photoUrl}" alt="${m.founderName}" class="search-result-thumb" />
-        <div class="search-result-meta">
-          <div class="search-result-name">${m.founderName}</div>
-          <div class="search-result-company">${m.designation} • <strong>${m.companyName}</strong></div>
-          <div class="search-result-address">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-            ${m.address || 'Jaipur, Rajasthan'}
-          </div>
-        </div>
-      </div>
-      <div style="text-align: right;">
-        <span class="search-result-sector">${m.sector}</span>
-        <div style="font-size: 0.68rem; color: var(--text-muted); margin-top: 2px;">by ${m.fellowName.split(' ')[0]}</div>
-      </div>
-    </div>
-  `).join('');
-
-  elements.searchResultsDropdown.classList.add('active');
-
-  // Jump to selected founder
-  elements.searchResultsDropdown.querySelectorAll('[data-jump-fellow]').forEach(item => {
-    item.addEventListener('click', () => {
-      const fellowId = item.dataset.jumpFellow;
-      const leadId = item.dataset.jumpLeadId;
-      jumpToFounder(fellowId, leadId);
-    });
-  });
-}
-
-// Jump directly to a founder from search
-function jumpToFounder(fellowId, leadId) {
-  state.currentFellowId = fellowId;
-  const leads = FOUNDERS_DATA[fellowId] || [];
-  const idx = leads.findIndex(l => l.id === leadId);
-  state.currentLeadIndex = idx >= 0 ? idx : 0;
-
-  // Close search dropdown
-  if (elements.searchResultsDropdown) {
-    elements.searchResultsDropdown.classList.remove('active');
-  }
-
-  // Switch to stage view
-  setViewMode('stage');
-  renderPodMembers();
-  renderLeadStepper();
-  updateStageLeadProfile();
-  showToast(`Showing profile for ${leads[state.currentLeadIndex].founderName}`);
-}
-
-// Open Full Founder Research Dossier Modal
-function openFullDossierModal() {
-  const leads = getActiveFellowLeads();
-  const lead = leads[state.currentLeadIndex];
-  if (!lead || !elements.modalOverlay || !elements.modalContentContainer) return;
-
-  elements.modalContentContainer.innerHTML = `
-    <div style="display: flex; gap: 16px; align-items: flex-start; padding-bottom: 16px; border-bottom: 2px solid var(--border-strong);">
-      <img src="${lead.photoUrl}" alt="${lead.founderName}" style="width: 72px; height: 72px; object-fit: cover; border: 2px solid var(--c-sharp-lime);" />
+  elements.slideoverContentBody.innerHTML = `
+    <!-- Top Identity Box -->
+    <div style="display: flex; gap: 16px; align-items: flex-start; padding-bottom: 20px; border-bottom: 1px solid var(--border-subtle);">
+      <img src="${lead.photoUrl}" alt="${lead.founderName}" style="width: 76px; height: 76px; border-radius: var(--radius-md); object-fit: cover; box-shadow: var(--shadow-card);" />
       <div>
-        <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em;">${lead.founderName}</h2>
-        <div style="font-size: 0.84rem; color: var(--c-mint-teal); font-weight: 600;">${lead.designation} • <strong>${lead.companyName}</strong></div>
+        <h2 style="font-size: 1.45rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em;">${lead.founderName}</h2>
+        <div style="font-size: 0.86rem; color: var(--color-emerald); font-weight: 600;">${lead.designation} • <strong>${lead.companyName}</strong></div>
         <div style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;">
-          <span class="badge-city">${lead.sector}</span>
-          <span class="badge-city" style="background: var(--c-sharp-lime); color: var(--c-deep-pine); border-color: var(--c-sharp-lime);">
+          <span class="brand-badge">${lead.sector}</span>
+          <span class="brand-badge" style="background: var(--color-lime-subtle); color: var(--color-charcoal); border-color: rgba(123, 174, 82, 0.4);">
             ${lead.eventAttendanceStatus}
           </span>
         </div>
       </div>
     </div>
 
+    <!-- Quick Info Cards Grid -->
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
-      <div style="background: var(--bg-card); padding: 14px; border: 1.5px solid var(--border-strong);">
-        <strong style="font-size: 0.72rem; font-family: var(--font-mono); text-transform: uppercase; color: var(--c-mint-teal); display: block; margin-bottom: 6px;">
-          Office Address & Location:
+      <div style="background: var(--bg-surface-subtle); padding: 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+        <strong style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-emerald); display: block; margin-bottom: 4px;">
+          Office Address & Locality:
         </strong>
-        <p style="font-size: 0.82rem; color: var(--text-secondary); font-family: var(--font-mono);">${lead.address || 'Jaipur, Rajasthan'}</p>
+        <p style="font-size: 0.84rem; color: var(--text-secondary);">${lead.address || 'Jaipur, Rajasthan'}</p>
       </div>
 
-      <div style="background: var(--bg-card); padding: 14px; border: 1.5px solid var(--border-strong);">
-        <strong style="font-size: 0.72rem; font-family: var(--font-mono); text-transform: uppercase; color: var(--c-mint-teal); display: block; margin-bottom: 6px;">
+      <div style="background: var(--bg-surface-subtle); padding: 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+        <strong style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-emerald); display: block; margin-bottom: 4px;">
           Public Contact:
         </strong>
-        <p style="font-size: 0.82rem; color: var(--text-secondary);">${lead.publicContact || 'Available via corporate channel'}</p>
+        <p style="font-size: 0.84rem; color: var(--text-secondary);">${lead.publicContact || 'Available via corporate channel'}</p>
       </div>
     </div>
 
-    <div style="background: var(--bg-card); padding: 14px; border: 1.5px solid var(--border-strong);">
-      <strong style="font-size: 0.72rem; font-family: var(--font-mono); text-transform: uppercase; color: var(--c-sharp-lime); display: block; margin-bottom: 6px;">
-        Business Model & Monetization:
+    <!-- What the Company Does -->
+    <div style="display: flex; flex-direction: column; gap: 6px;">
+      <strong style="font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-emerald);">
+        Company Overview & Scale
       </strong>
-      <p style="font-size: 0.84rem; color: var(--text-secondary); line-height: 1.6;">${lead.businessModel}</p>
+      <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6;">
+        ${lead.companySummary || lead.businessModel}
+      </p>
     </div>
 
-    <div style="background: var(--bg-card); padding: 14px; border: 1.5px solid var(--border-strong); border-left: 4px solid var(--c-sharp-lime);">
-      <strong style="font-size: 0.72rem; font-family: var(--font-mono); text-transform: uppercase; color: var(--c-sharp-lime); display: block; margin-bottom: 6px;">
-        Why Relevant to Founders Connect (21st Nov):
+    <!-- Business Model -->
+    <div style="display: flex; flex-direction: column; gap: 6px;">
+      <strong style="font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-emerald);">
+        Business Model & Monetization
       </strong>
-      <p style="font-size: 0.84rem; color: var(--text-secondary); line-height: 1.6;">${lead.relevanceToFoundersConnect}</p>
+      <div class="reel-business-model-box" style="margin: 0;">
+        ${lead.businessModel}
+      </div>
     </div>
 
-    <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 10px;">
-      <a href="${lead.linkedinUrl}" target="_blank" rel="noopener noreferrer" class="btn-secondary">LinkedIn Profile ↗</a>
-      <a href="${lead.website}" target="_blank" rel="noopener noreferrer" class="btn-secondary">Visit Website ↗</a>
-      <button onclick="document.getElementById('modal-overlay').classList.remove('open'); document.body.style.overflow='';" class="btn-primary">Done</button>
+    <!-- Previous Events -->
+    <div style="display: flex; flex-direction: column; gap: 6px;">
+      <strong style="font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-emerald);">
+        Previous Event Participation Details
+      </strong>
+      <ul style="list-style: none; display: flex; flex-direction: column; gap: 6px; padding: 0;">
+        ${(lead.previousEvents || ['Active in TiE Rajasthan and state investor meets']).map(ev => `
+          <li style="font-size: 0.82rem; color: var(--text-secondary); display: flex; align-items: flex-start; gap: 6px;">
+            <span style="color: var(--color-emerald);">✦</span> ${ev}
+          </li>
+        `).join('')}
+      </ul>
+    </div>
+
+    <!-- Relevance to Founders Connect -->
+    <div class="reel-relevance-card">
+      <span class="reel-relevance-title">✦ Strategic Synergy for Founders Connect (21st Nov)</span>
+      <p class="reel-relevance-text">${lead.relevanceToFoundersConnect}</p>
+    </div>
+
+    <!-- Verification Sources -->
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      <strong style="font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted);">
+        Verified Information Sources
+      </strong>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        ${(lead.sourceLinks || []).map(s => `
+          <a href="${s.url}" target="_blank" rel="noopener noreferrer" class="btn-pill-secondary" style="font-size: 0.74rem; padding: 4px 10px;">
+            ${s.label} ↗
+          </a>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- Bottom Actions -->
+    <div style="display: flex; gap: 10px; justify-content: flex-end; padding-top: 14px; border-top: 1px solid var(--border-subtle); margin-top: auto;">
+      <a href="${lead.linkedinUrl}" target="_blank" rel="noopener noreferrer" class="btn-pill-secondary">LinkedIn Profile ↗</a>
+      <a href="${lead.website}" target="_blank" rel="noopener noreferrer" class="btn-pill-secondary">Visit Website ↗</a>
+      <button onclick="document.getElementById('slideover-modal-backdrop').classList.remove('open');" class="btn-pill-primary">Done</button>
     </div>
   `;
 
-  elements.modalOverlay.classList.add('open');
-  document.body.style.overflow = 'hidden';
+  elements.slideoverModalBackdrop.classList.add('open');
 }
 
-function closeModal() {
-  if (elements.modalOverlay) {
-    elements.modalOverlay.classList.remove('open');
-    document.body.style.overflow = '';
+function closeSlideover() {
+  if (elements.slideoverModalBackdrop) {
+    elements.slideoverModalBackdrop.classList.remove('open');
   }
+}
+
+// Spotlight Search Logic
+function handleSpotlightSearch(query) {
+  state.searchQuery = query.trim().toLowerCase();
+
+  if (!elements.searchResultsTray) return;
+
+  if (state.searchQuery.length === 0) {
+    elements.searchResultsTray.classList.remove('active');
+    elements.searchResultsTray.innerHTML = '';
+    if (elements.searchClearBtn) elements.searchClearBtn.classList.remove('visible');
+    return;
+  }
+
+  if (elements.searchClearBtn) elements.searchClearBtn.classList.add('visible');
+
+  const all = getAllLeadsFlat();
+  const matches = all.filter(lead => {
+    const nameMatch = lead.founderName.toLowerCase().includes(state.searchQuery);
+    const companyMatch = lead.companyName.toLowerCase().includes(state.searchQuery);
+    const sectorMatch = lead.sector.toLowerCase().includes(state.searchQuery);
+    const addressMatch = (lead.address || '').toLowerCase().includes(state.searchQuery);
+    const fellowMatch = lead.fellowName.toLowerCase().includes(state.searchQuery);
+
+    return nameMatch || companyMatch || sectorMatch || addressMatch || fellowMatch;
+  });
+
+  if (matches.length === 0) {
+    elements.searchResultsTray.innerHTML = `
+      <div style="padding: 24px; text-align: center; color: var(--text-muted); font-size: 0.85rem;">
+        No founders found matching "<strong>${query}</strong>" across name, company, sector, or Jaipur address.
+      </div>
+    `;
+    elements.searchResultsTray.classList.add('active');
+    return;
+  }
+
+  elements.searchResultsTray.innerHTML = matches.slice(0, 8).map(m => `
+    <div class="search-result-row" data-jump-fellow="${m.fellowId}" data-jump-lead-id="${m.id}">
+      <div class="search-result-left">
+        <img src="${m.photoUrl}" alt="${m.founderName}" class="search-result-photo" />
+        <div>
+          <div class="search-result-title">${m.founderName}</div>
+          <div class="search-result-desc">${m.designation} • <strong>${m.companyName}</strong></div>
+          <div class="search-result-location">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+            ${m.address || 'Jaipur, Rajasthan'}
+          </div>
+        </div>
+      </div>
+      <div style="text-align: right;">
+        <span class="reel-sector-tag">${m.sector.split('&')[0].trim()}</span>
+        <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 2px;">by ${m.fellowName.split(' ')[0]}</div>
+      </div>
+    </div>
+  `).join('');
+
+  elements.searchResultsTray.classList.add('active');
+
+  elements.searchResultsTray.querySelectorAll('[data-jump-fellow]').forEach(row => {
+    row.addEventListener('click', () => {
+      const fellowId = row.dataset.jumpFellow;
+      const leadId = row.dataset.jumpLeadId;
+      jumpToLead(fellowId, leadId);
+    });
+  });
+}
+
+// Jump to Lead from search
+function jumpToLead(fellowId, leadId) {
+  state.currentFellowId = fellowId;
+  const leads = FOUNDERS_DATA[fellowId] || [];
+  const idx = leads.findIndex(l => l.id === leadId);
+  state.currentLeadIndex = idx >= 0 ? idx : 0;
+
+  if (elements.searchResultsTray) elements.searchResultsTray.classList.remove('active');
+
+  setViewMode('reels');
+  renderPodStories();
+  renderReelsCarousel();
+  showToast(`Showing profile for ${leads[state.currentLeadIndex].founderName}`);
 }
 
 // Toast helper
 function showToast(msg) {
-  if (!elements.toastNotice) return;
-  elements.toastNotice.textContent = msg;
-  elements.toastNotice.classList.add('show');
+  if (!elements.toastBadge) return;
+  elements.toastBadge.textContent = msg;
+  elements.toastBadge.classList.add('show');
   setTimeout(() => {
-    elements.toastNotice.classList.remove('show');
+    elements.toastBadge.classList.remove('show');
   }, 2800);
 }
 
-// Export CSV for Google Sheets
-function exportSpreadsheetCSV() {
-  const allLeads = getAllLeadsFlat();
+// 1-Click TSV Copy for Google Sheets
+function copyDataForGoogleSheets() {
+  const all = getAllLeadsFlat();
 
   const headers = [
-    "Pod Member (Fellow)",
+    "Pod Fellow",
     "Founder Name",
     "Designation",
     "Startup / Company Name",
     "Website",
     "LinkedIn Profile URL",
-    "Public Contact Number / Email",
-    "Office Address / Location",
+    "Public Contact",
+    "Jaipur Address / Location",
     "Sector",
-    "What Company Does & Business Model",
+    "Business Model",
     "Attended Events (Yes/No)",
-    "Previous Event Participation",
-    "Relevance to Founders Connect (21st Nov)",
+    "Previous Event Details",
+    "Why Relevant to Founders Connect (21st Nov)"
+  ];
+
+  const rows = all.map(l => [
+    l.fellowName,
+    l.founderName,
+    l.designation,
+    l.companyName,
+    l.website,
+    l.linkedinUrl,
+    l.publicContact,
+    l.address || 'Jaipur, Rajasthan',
+    l.sector,
+    l.businessModel.replace(/[\r\n\t]+/g, ' '),
+    l.attendedEvents ? 'Yes' : 'No',
+    (l.previousEvents || []).join('; '),
+    l.relevanceToFoundersConnect.replace(/[\r\n\t]+/g, ' ')
+  ]);
+
+  const tsv = [headers.join('\t'), ...rows.map(r => r.join('\t'))].join('\n');
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(tsv).then(() => {
+      showToast("Data copied! Open Google Sheets and press Ctrl+V to paste.");
+    }).catch(() => {
+      fallbackCopyText(tsv);
+    });
+  } else {
+    fallbackCopyText(tsv);
+  }
+}
+
+function fallbackCopyText(text) {
+  const textArea = document.createElement("textarea");
+  textArea.value = text;
+  document.body.appendChild(textArea);
+  textArea.select();
+  try {
+    document.execCommand('copy');
+    showToast("Data copied! Open Google Sheets and press Ctrl+V to paste.");
+  } catch (err) {
+    showToast("Failed to copy. Use 'Export CSV' button instead.");
+  }
+  document.body.removeChild(textArea);
+}
+
+// Export CSV File
+function exportCSVFile() {
+  const all = getAllLeadsFlat();
+
+  const headers = [
+    "Pod Fellow",
+    "Founder Name",
+    "Designation",
+    "Startup / Company Name",
+    "Website",
+    "LinkedIn Profile URL",
+    "Public Contact",
+    "Jaipur Address / Location",
+    "Sector",
+    "Business Model",
+    "Attended Events (Yes/No)",
+    "Previous Event Details",
+    "Why Relevant to Founders Connect (21st Nov)",
     "Sources"
   ];
 
@@ -582,7 +730,7 @@ function exportSpreadsheetCSV() {
     return `"${s}"`;
   };
 
-  const rows = allLeads.map(l => {
+  const rows = all.map(l => {
     const prevEvents = (l.previousEvents || []).join('; ');
     const sources = (l.sourceLinks || []).map(s => `${s.label}: ${s.url}`).join(' | ');
     return [
@@ -612,28 +760,30 @@ function exportSpreadsheetCSV() {
   link.click();
   document.body.removeChild(link);
 
-  showToast("Spreadsheet CSV exported with all 90 Jaipur Leads!");
+  showToast("CSV file exported successfully!");
 }
 
 // Attach Event Listeners
 function attachEventListeners() {
-  // Theme toggle
-  if (elements.themeToggleBtn) {
-    elements.themeToggleBtn.addEventListener('click', toggleTheme);
-  }
+  // Navigation Buttons
+  if (elements.carouselNextBtn) elements.carouselNextBtn.addEventListener('click', nextLead);
+  if (elements.carouselPrevBtn) elements.carouselPrevBtn.addEventListener('click', prevLead);
 
-  // Top Search Input
-  if (elements.globalSearchInput) {
-    elements.globalSearchInput.addEventListener('input', (e) => {
-      handleGlobalSearch(e.target.value);
-    });
+  // View Mode Toggles
+  if (elements.viewReelsBtn) elements.viewReelsBtn.addEventListener('click', () => setViewMode('reels'));
+  if (elements.viewGalleryBtn) elements.viewGalleryBtn.addEventListener('click', () => setViewMode('gallery'));
+  if (elements.viewTableBtn) elements.viewTableBtn.addEventListener('click', () => setViewMode('table'));
 
-    elements.globalSearchInput.addEventListener('keydown', (e) => {
+  // Spotlight Search Input
+  if (elements.spotlightSearchInput) {
+    elements.spotlightSearchInput.addEventListener('input', (e) => handleSpotlightSearch(e.target.value));
+
+    elements.spotlightSearchInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
-        const firstMatch = elements.searchResultsDropdown.querySelector('.search-result-item');
-        if (firstMatch) firstMatch.click();
+        const first = elements.searchResultsTray.querySelector('.search-result-row');
+        if (first) first.click();
       } else if (e.key === 'Escape') {
-        elements.searchResultsDropdown.classList.remove('active');
+        elements.searchResultsTray.classList.remove('active');
       }
     });
   }
@@ -641,77 +791,90 @@ function attachEventListeners() {
   // Clear search
   if (elements.searchClearBtn) {
     elements.searchClearBtn.addEventListener('click', () => {
-      if (elements.globalSearchInput) elements.globalSearchInput.value = '';
-      handleGlobalSearch('');
+      if (elements.spotlightSearchInput) elements.spotlightSearchInput.value = '';
+      handleSpotlightSearch('');
     });
   }
 
-  // Close search dropdown on click outside
+  // Click outside to close search dropdown
   document.addEventListener('click', (e) => {
-    if (!e.target.closest('.top-search-container')) {
-      if (elements.searchResultsDropdown) {
-        elements.searchResultsDropdown.classList.remove('active');
-      }
+    if (!e.target.closest('.header-search-wrap')) {
+      if (elements.searchResultsTray) elements.searchResultsTray.classList.remove('active');
     }
   });
 
-  // Pod sidebar scroll down button
-  if (elements.podScrollDownBtn && elements.podMembersList) {
-    elements.podScrollDownBtn.addEventListener('click', () => {
-      elements.podMembersList.scrollBy({ top: 120, behavior: 'smooth' });
+  // Action Buttons
+  if (elements.copySheetsBtn) elements.copySheetsBtn.addEventListener('click', copyDataForGoogleSheets);
+  if (elements.exportCsvBtn) elements.exportCsvBtn.addEventListener('click', exportCSVFile);
+
+  // Slide-Over Modal Close
+  if (elements.slideoverCloseBtn) elements.slideoverCloseBtn.addEventListener('click', closeSlideover);
+  if (elements.slideoverModalBackdrop) {
+    elements.slideoverModalBackdrop.addEventListener('click', (e) => {
+      if (e.target === elements.slideoverModalBackdrop) closeSlideover();
     });
   }
 
-  // Navigation Arrows (<- and ->)
-  if (elements.canvasNextBtn) {
-    elements.canvasNextBtn.addEventListener('click', nextLead);
-  }
-  if (elements.canvasPrevBtn) {
-    elements.canvasPrevBtn.addEventListener('click', prevLead);
+  // Mouse & Touch Drag Gestures for Carousel (Instagram Reels swipe feel)
+  if (elements.reelsCarouselTrackContainer) {
+    const track = elements.reelsCarouselTrackContainer;
+
+    // Mouse drag
+    track.addEventListener('mousedown', (e) => {
+      state.drag.isDragging = true;
+      state.drag.startX = e.clientX;
+    });
+
+    window.addEventListener('mouseup', (e) => {
+      if (!state.drag.isDragging) return;
+      state.drag.isDragging = false;
+      const diffX = e.clientX - state.drag.startX;
+      if (diffX < -50) {
+        nextLead();
+      } else if (diffX > 50) {
+        prevLead();
+      }
+    });
+
+    // Touch swipe
+    track.addEventListener('touchstart', (e) => {
+      state.drag.isDragging = true;
+      state.drag.startX = e.touches[0].clientX;
+    }, { passive: true });
+
+    track.addEventListener('touchend', (e) => {
+      if (!state.drag.isDragging) return;
+      state.drag.isDragging = false;
+      const diffX = e.changedTouches[0].clientX - state.drag.startX;
+      if (diffX < -45) {
+        nextLead();
+      } else if (diffX > 45) {
+        prevLead();
+      }
+    }, { passive: true });
   }
 
-  // Keyboard Arrow navigation (Left / Right keys)
+  // Keyboard Shortcuts
   document.addEventListener('keydown', (e) => {
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
     if (e.key === 'ArrowRight') {
       nextLead();
     } else if (e.key === 'ArrowLeft') {
       prevLead();
     } else if (e.key === 'Escape') {
-      closeModal();
+      closeSlideover();
+    } else if (e.key === '/') {
+      e.preventDefault();
+      if (elements.spotlightSearchInput) elements.spotlightSearchInput.focus();
+    } else if (e.key >= '1' && e.key <= '9') {
+      state.currentLeadIndex = parseInt(e.key, 10) - 1;
+      renderReelsCarousel();
+    } else if (e.key === '0') {
+      state.currentLeadIndex = 9; // 10th lead
+      renderReelsCarousel();
     }
   });
-
-  // View mode buttons
-  if (elements.viewStageBtn) {
-    elements.viewStageBtn.addEventListener('click', () => setViewMode('stage'));
-  }
-  if (elements.viewGridBtn) {
-    elements.viewGridBtn.addEventListener('click', () => setViewMode('grid'));
-  }
-  if (elements.viewTableBtn) {
-    elements.viewTableBtn.addEventListener('click', () => setViewMode('table'));
-  }
-
-  // Stage full dossier button
-  if (elements.stageFullDossierBtn) {
-    elements.stageFullDossierBtn.addEventListener('click', openFullDossierModal);
-  }
-
-  // Modal close
-  if (elements.modalCloseBtn) {
-    elements.modalCloseBtn.addEventListener('click', closeModal);
-  }
-  if (elements.modalOverlay) {
-    elements.modalOverlay.addEventListener('click', (e) => {
-      if (e.target === elements.modalOverlay) closeModal();
-    });
-  }
-
-  // Export CSV
-  if (elements.exportCsvBtn) {
-    elements.exportCsvBtn.addEventListener('click', exportSpreadsheetCSV);
-  }
 }
 
 // Run on page load
