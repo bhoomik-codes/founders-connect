@@ -60,13 +60,54 @@ const elements = {
   slideoverContentBody: document.getElementById('slideover-content-body')
 };
 
+// SVG Image fallback helper
+window.handleImageError = function(img, name) {
+  img.onerror = null;
+  const initials = (name || 'FC').split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
+  img.src = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="750" viewBox="0 0 600 750"><rect width="100%" height="100%" fill="%23E7F2EE"/><text x="50%" y="50%" font-family="Plus Jakarta Sans, sans-serif" font-size="110" font-weight="800" fill="%230F4C3A" dominant-baseline="middle" text-anchor="middle">${initials}</text></svg>`;
+};
+
+// URL Parameter Deep-Linking
+function parseUrlParameters() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const fellow = params.get('fellow') || params.get('pod');
+    const lead = params.get('lead');
+    const view = params.get('view');
+    const search = params.get('search');
+
+    if (fellow && FOUNDERS_DATA[fellow]) {
+      state.currentFellowId = fellow;
+    }
+    if (lead) {
+      const num = parseInt(lead, 10);
+      if (!isNaN(num) && num >= 1 && num <= 10) {
+        state.currentLeadIndex = num - 1;
+      }
+    }
+    if (view && ['reels', 'gallery', 'table'].includes(view)) {
+      state.viewMode = view;
+    }
+    if (search) {
+      if (elements.spotlightSearchInput) {
+        elements.spotlightSearchInput.value = search;
+        setTimeout(() => handleSpotlightSearch(search), 100);
+      }
+    }
+  } catch (err) {
+    // Ignore URL parse errors
+  }
+}
+
 // Initialize Application
 function init() {
+  parseUrlParameters();
   renderPodStories();
   renderSectorPills();
   renderReelsCarousel();
   renderGalleryGrid();
   renderTableView();
+  setViewMode(state.viewMode);
   attachEventListeners();
 }
 
