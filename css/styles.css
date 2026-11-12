@@ -633,6 +633,31 @@ a:focus-visible {
   will-change: transform;
 }
 
+.founder-empty-state {
+  flex: 1 1 100%;
+  grid-column: 1 / -1;
+  min-height: 220px;
+  padding: clamp(24px, 5vw, 48px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  border: 1px dashed var(--border-medium);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  text-align: center;
+}
+.founder-empty-state h2 { font-size: clamp(1.1rem, 2.5vw, 1.5rem); }
+.founder-empty-state p { max-width: 48ch; color: var(--text-muted); font-size: .86rem; }
+.founder-empty-kicker {
+  color: var(--color-emerald);
+  font: 600 .65rem/1.4 var(--font-mono);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.empty-table-state { padding: 32px 18px !important; color: var(--text-muted); text-align: center; }
+
 /* Individual Founder Reel Card (Apple / Airbnb / Reels Story Card) */
 .reel-founder-card {
   flex: 0 0 calc(100% - 32px);

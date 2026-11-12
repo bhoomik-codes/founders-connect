@@ -133,6 +133,13 @@ function getActiveFellowLeads() {
   return FOUNDERS_DATA[state.currentFellowId] || [];
 }
 
+function getFilteredFellowLeads() {
+  const leads = getActiveFellowLeads();
+  return state.selectedSector === 'All Sectors'
+    ? leads
+    : leads.filter(lead => lead.sector === state.selectedSector);
+}
+
 // Render Pod Story Dock (Instagram Stories / Category bar)
 function renderPodStories() {
   if (!elements.podStoriesList) return;
@@ -189,7 +196,7 @@ function renderSectorPills() {
   if (!elements.sectorFilterPills) return;
 
   elements.sectorFilterPills.innerHTML = SECTORS.map(sec => `
-    <button class="filter-chip-btn ${state.selectedSector === sec ? 'active' : ''}" data-sector="${sec}">
+    <button type="button" class="filter-chip-btn ${state.selectedSector === sec ? 'active' : ''}" data-sector="${sec}" aria-pressed="${state.selectedSector === sec}">
       ${sec}
     </button>
   `).join('');
@@ -197,7 +204,9 @@ function renderSectorPills() {
   elements.sectorFilterPills.querySelectorAll('[data-sector]').forEach(chip => {
     chip.addEventListener('click', () => {
       state.selectedSector = chip.dataset.sector;
+      state.currentLeadIndex = 0;
       renderSectorPills();
+      renderReelsCarousel();
       renderGalleryGrid();
       renderTableView();
     });
@@ -208,7 +217,7 @@ function renderSectorPills() {
 function renderStoryProgressStrip() {
   if (!elements.storyProgressStrip) return;
 
-  const leads = getActiveFellowLeads();
+  const leads = getFilteredFellowLeads();
   let html = '';
 
   for (let i = 0; i < leads.length; i++) {
@@ -239,9 +248,22 @@ function renderStoryProgressStrip() {
 function renderReelsCarousel() {
   renderStoryProgressStrip();
 
-  const leads = getActiveFellowLeads();
-  const lead = leads[state.currentLeadIndex] || leads[0];
-  if (!lead || !elements.reelsCarouselTrack) return;
+  const leads = getFilteredFellowLeads();
+  if (!elements.reelsCarouselTrack) return;
+
+  if (!leads.length) {
+    elements.reelsCarouselTrack.innerHTML = `
+      <div class="founder-empty-state" role="status">
+        <span class="founder-empty-kicker">${state.selectedSector}</span>
+        <h2>No matching founders in this research track</h2>
+        <p>Choose another sector or switch to a research fellow with profiles in this category.</p>
+      </div>
+    `;
+    return;
+  }
+
+  if (state.currentLeadIndex >= leads.length) state.currentLeadIndex = 0;
+  const lead = leads[state.currentLeadIndex];
 
   elements.reelsCarouselTrack.innerHTML = `
     <article class="reel-founder-card" data-founder-id="${lead.id}">
@@ -340,14 +362,16 @@ function renderReelsCarousel() {
 
 // Next Lead
 function nextLead() {
-  const leads = getActiveFellowLeads();
+  const leads = getFilteredFellowLeads();
+  if (!leads.length) return;
   state.currentLeadIndex = (state.currentLeadIndex + 1) % leads.length;
   renderReelsCarousel();
 }
 
 // Previous Lead
 function prevLead() {
-  const leads = getActiveFellowLeads();
+  const leads = getFilteredFellowLeads();
+  if (!leads.length) return;
   state.currentLeadIndex = (state.currentLeadIndex - 1 + leads.length) % leads.length;
   renderReelsCarousel();
 }
@@ -356,17 +380,14 @@ function prevLead() {
 function renderGalleryGrid() {
   if (!elements.galleryGridWrapper) return;
 
-  let leads = getActiveFellowLeads();
-
-  if (state.selectedSector !== 'All Sectors') {
-    leads = leads.filter(l => l.sector === state.selectedSector);
-  }
+  const leads = getFilteredFellowLeads();
 
   if (leads.length === 0) {
     elements.galleryGridWrapper.innerHTML = `
-      <div style="grid-column: 1 / -1; padding: 48px; text-align: center; background: #FFFFFF; border-radius: var(--radius-lg); border: 1px dashed var(--border-medium);">
-        <p style="font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">No founders in this category</p>
-        <p style="font-size: 0.85rem; color: var(--text-muted);">Try selecting "All Sectors" to see all research leads.</p>
+      <div class="founder-empty-state" role="status">
+        <span class="founder-empty-kicker">${state.selectedSector}</span>
+        <h2>No matching founders in this research track</h2>
+        <p>Choose another sector or switch to a research fellow with profiles in this category.</p>
       </div>
     `;
     return;
@@ -417,10 +438,11 @@ function renderGalleryGrid() {
 function renderTableView() {
   if (!elements.tableViewBody) return;
 
-  let leads = getActiveFellowLeads();
+  const leads = getFilteredFellowLeads();
 
-  if (state.selectedSector !== 'All Sectors') {
-    leads = leads.filter(l => l.sector === state.selectedSector);
+  if (!leads.length) {
+    elements.tableViewBody.innerHTML = `<tr><td colspan="7" class="empty-table-state">No ${state.selectedSector} founders in this research track. Choose another sector or switch research fellows.</td></tr>`;
+    return;
   }
 
   elements.tableViewBody.innerHTML = leads.map((lead, idx) => `
@@ -918,11 +940,11 @@ function attachEventListeners() {
       if (elements.spotlightSearchInput) elements.spotlightSearchInput.focus();
     } else if (e.key >= '1' && e.key <= '9') {
       const targetIndex = parseInt(e.key, 10) - 1;
-      if (targetIndex < getActiveFellowLeads().length) {
+      if (targetIndex < getFilteredFellowLeads().length) {
         state.currentLeadIndex = targetIndex;
         renderReelsCarousel();
       }
-    } else if (e.key === '0' && getActiveFellowLeads().length >= 10) {
+    } else if (e.key === '0' && getFilteredFellowLeads().length >= 10) {
       state.currentLeadIndex = 9;
       renderReelsCarousel();
     }
