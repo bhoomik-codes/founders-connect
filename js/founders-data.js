@@ -7,7 +7,7 @@ export const EVENT_DETAILS = {
   "location": "Jaipur, Rajasthan",
   "targetFoundersPerFellow": 10,
   "totalFellows": 7,
-  "targetTotalLeads": 63,
+  "targetTotalLeads": 70,
   "description": "A researched directory of founders and startups connected to Jaipur, with source notes for each profile."
 };
 
@@ -90,8 +90,8 @@ export const TEAM_MEMBERS = [
     "avatarInitials": "KU",
     "focus": "D2C, consumer & circular ventures",
     "target": 10,
-    "completed": 3,
-    "status": "3 researched founders",
+    "completed": 10,
+    "status": "10 researched founders",
     "notes": "Founder research submitted by kunal."
   },
   {
@@ -2694,3 +2694,127 @@ export const FOUNDERS_DATA = {
     }
   ]
 };
+
+// Seven additional, independently sourced Jaipur founders for Kunal's D2C,
+// consumer and circular-economy track. Names and companies are unique across
+// the directory; event attendance is not inferred from directory listings.
+FOUNDERS_DATA.kunal.push(
+  {
+    "id": "kunal-004", "leadIndex": 4, "fellowId": "kunal", "fellowName": "Kunal",
+    "founderName": "Ankush Goyal", "designation": "Founder",
+    "companyName": "Aramya (DSLR Technologies)", "website": "https://aramya.in/", "linkedinUrl": "", "photoUrl": "",
+    "publicContact": "", "address": "Jaipur, Rajasthan", "sector": "Consumer & Commerce", "keyMetric": "Jaipur startup research",
+    "businessModel": "Direct-to-consumer women's ethnic-wear brand, selling through its own channels and online marketplaces.",
+    "companySummary": "Jaipur-headquartered ethnic-wear company focused on value-led women's fashion.",
+    "attendedEvents": false, "eventAttendanceStatus": "No public event participation verified", "previousEvents": [],
+    "relevanceToFoundersConnect": "Relevant to Kunal's consumer-brand track through D2C apparel, category positioning and omnichannel growth.",
+    "sourceLinks": [
+      { "label": "eChai Jaipur D2C founder directory", "url": "https://echai.ventures/jaipur/d2c" },
+      { "label": "Inc42 founder profile", "url": "https://inc42.com/person/ankush-goyal/" },
+      { "label": "Aramya company site", "url": "https://aramya.in/" }
+    ],
+    "tags": ["Consumer & Commerce", "D2C", "Jaipur research"], "relevanceScore": 75,
+    "researchNotes": "Founder and Jaipur company connection verified via eChai and Inc42; event participation not verified."
+  },
+  {
+    "id": "kunal-005", "leadIndex": 5, "fellowId": "kunal", "fellowName": "Kunal",
+    "founderName": "Vikram Kankaria", "designation": "Co-Founder",
+    "companyName": "FASHOR", "website": "https://fashor.com/", "linkedinUrl": "", "photoUrl": "",
+    "publicContact": "", "address": "Jaipur, Rajasthan", "sector": "Consumer & Commerce", "keyMetric": "Jaipur startup research",
+    "businessModel": "Direct-to-consumer women's apparel brand selling Indian and Indo-western designs through online retail.",
+    "companySummary": "Jaipur-linked fashion brand blending contemporary women's apparel with Indian craft influences.",
+    "attendedEvents": false, "eventAttendanceStatus": "No public event participation verified", "previousEvents": [],
+    "relevanceToFoundersConnect": "Adds a fashion and D2C operating perspective, including design-led merchandising and consumer acquisition.",
+    "sourceLinks": [
+      { "label": "eChai Jaipur D2C founder directory", "url": "https://echai.ventures/jaipur/d2c" },
+      { "label": "YourStory Challenger Brands report", "url": "https://yourstory.com/cs/uploads/500ChallengerBrandsReport20211-1640024978412.pdf" },
+      { "label": "FASHOR company site", "url": "https://fashor.com/pages/about-us" }
+    ],
+    "tags": ["Consumer & Commerce", "D2C", "Jaipur research"], "relevanceScore": 75,
+    "researchNotes": "The founder and company relationship is identified in the YourStory report; Jaipur D2C listing supports the local connection."
+  },
+  {
+    "id": "kunal-006", "leadIndex": 6, "fellowId": "kunal", "fellowName": "Kunal",
+    "founderName": "Mohit Yadav", "designation": "Co-Founder",
+    "companyName": "Minimalist (Uprising Science)", "website": "https://beminimalist.co/", "linkedinUrl": "", "photoUrl": "",
+    "publicContact": "", "address": "Jaipur, Rajasthan", "sector": "Health & Care", "keyMetric": "Jaipur startup research",
+    "businessModel": "Direct-to-consumer skincare brand with ingredient-led formulations sold online and through retail partners.",
+    "companySummary": "Jaipur-founded, science-led skincare brand focused on transparent ingredients and targeted personal-care products.",
+    "attendedEvents": false, "eventAttendanceStatus": "No public event participation verified", "previousEvents": [],
+    "relevanceToFoundersConnect": "Useful consumer-scale case study in product trust, brand differentiation, ecommerce and growth through acquisition.",
+    "sourceLinks": [
+      { "label": "eChai Jaipur D2C founder directory", "url": "https://echai.ventures/jaipur/d2c" },
+      { "label": "Mint founder profile", "url": "https://www.livemint.com/mint-lounge/business-of-life/mohit-yadav-minimalist-india-business-profile-d2c-skincare-brand-11720110285001.html" },
+      { "label": "Minimalist company site", "url": "https://beminimalist.co/" }
+    ],
+    "tags": ["Health & Care", "D2C", "Jaipur research"], "relevanceScore": 75,
+    "researchNotes": "Founder, Jaipur roots and D2C business are supported by the cited reporting and Jaipur founder directory."
+  },
+  {
+    "id": "kunal-007", "leadIndex": 7, "fellowId": "kunal", "fellowName": "Kunal",
+    "founderName": "Nikita Bhandari", "designation": "Co-Founder",
+    "companyName": "AZGA", "website": "https://www.azga.in/", "linkedinUrl": "", "photoUrl": "",
+    "publicContact": "hello@azga.in (published company contact)", "address": "Jaipur, Rajasthan", "sector": "Consumer & Commerce", "keyMetric": "Jaipur startup research",
+    "businessModel": "Design-led accessories and gifting brand combining Jaipur craft techniques with online and international sales.",
+    "companySummary": "Jaipur-founded accessories label working with local craft clusters on contemporary jewellery and menswear accessories.",
+    "attendedEvents": false, "eventAttendanceStatus": "No public event participation verified", "previousEvents": [],
+    "relevanceToFoundersConnect": "Relevant to craft-led consumer branding, artisan supply chains, product design and international market access.",
+    "sourceLinks": [
+      { "label": "AZGA founders and brand story", "url": "https://www.azga.in/pages/about-us-1" },
+      { "label": "eChai Jaipur D2C founder directory", "url": "https://echai.ventures/jaipur/d2c" }
+    ],
+    "tags": ["Consumer & Commerce", "Craft & D2C", "Jaipur research"], "relevanceScore": 75,
+    "researchNotes": "AZGA's own founders page confirms Nikita Bhandari and the Jaipur origin; event participation not verified."
+  },
+  {
+    "id": "kunal-008", "leadIndex": 8, "fellowId": "kunal", "fellowName": "Kunal",
+    "founderName": "Mridula Kanoria", "designation": "Founder",
+    "companyName": "Eat Better Co", "website": "https://eatbetterco.com/", "linkedinUrl": "", "photoUrl": "",
+    "publicContact": "care@eatbetterco.com (published company contact)", "address": "Jaipur, Rajasthan", "sector": "Food & Beverage", "keyMetric": "Jaipur startup research",
+    "businessModel": "Direct-to-consumer healthy-snacking brand selling clean-label snacks through ecommerce and retail channels.",
+    "companySummary": "Jaipur food brand making familiar snacks with natural ingredients and selling across India.",
+    "attendedEvents": false, "eventAttendanceStatus": "No public event participation verified", "previousEvents": [],
+    "relevanceToFoundersConnect": "Adds a consumer-food case study across product innovation, manufacturing, family-led entrepreneurship and omnichannel distribution.",
+    "sourceLinks": [
+      { "label": "Eat Better founder story", "url": "https://eatbetterco.com/pages/our-story" },
+      { "label": "eChai Jaipur D2C founder directory", "url": "https://echai.ventures/jaipur/d2c" },
+      { "label": "Eat Better Jaipur contact page", "url": "https://eatbetterco.com/pages/contact-us" }
+    ],
+    "tags": ["Food & Beverage", "D2C", "Jaipur research"], "relevanceScore": 75,
+    "researchNotes": "Founder is confirmed by the company story page; its published address and Jaipur D2C listing establish the city connection."
+  },
+  {
+    "id": "kunal-009", "leadIndex": 9, "fellowId": "kunal", "fellowName": "Kunal",
+    "founderName": "Aarushi Kilawat", "designation": "Founder & Designer",
+    "companyName": "The Loom Art", "website": "https://theloomart.com/", "linkedinUrl": "https://in.linkedin.com/in/aarushi-kilawat-05a468239", "photoUrl": "",
+    "publicContact": "", "address": "Jaipur, Rajasthan", "sector": "Consumer & Commerce", "keyMetric": "Jaipur startup research",
+    "businessModel": "Sustainable, craft-led fashion label using handloom and embroidery made in collaboration with artisan communities.",
+    "companySummary": "Jaipur-based handloom brand bringing traditional craft techniques into contemporary apparel and accessories.",
+    "attendedEvents": false, "eventAttendanceStatus": "No public event participation verified", "previousEvents": [],
+    "relevanceToFoundersConnect": "Strong fit for sustainable consumer brands, artisan partnerships, design-led differentiation and responsible production.",
+    "sourceLinks": [
+      { "label": "The Telegraph — founder and Jaipur venture profile", "url": "https://www.telegraphindia.com/culture/style/the-loom-art-by-aarushi-kilawat-is-championing-the-cause-of-the-handloom-and-handwoven/cid/1865969" },
+      { "label": "Aarushi Kilawat public LinkedIn profile", "url": "https://in.linkedin.com/in/aarushi-kilawat-05a468239" },
+      { "label": "eChai Jaipur D2C founder directory", "url": "https://echai.ventures/jaipur/d2c" }
+    ],
+    "tags": ["Consumer & Commerce", "Sustainability", "Jaipur research"], "relevanceScore": 75,
+    "researchNotes": "Founder and Jaipur location are supported by Telegraph India and her public professional profile."
+  },
+  {
+    "id": "kunal-010", "leadIndex": 10, "fellowId": "kunal", "fellowName": "Kunal",
+    "founderName": "Aditi Jhala", "designation": "Founder",
+    "companyName": "The Misfits Foodtech", "website": "https://mymisfits.in/", "linkedinUrl": "", "photoUrl": "",
+    "publicContact": "", "address": "Jaipur, Rajasthan", "sector": "Food & Beverage", "keyMetric": "Jaipur startup research",
+    "businessModel": "Consumer packaged foods made by rescuing surplus and imperfect produce from farms and markets.",
+    "companySummary": "Jaipur food startup upcycling edible produce into packaged foods while working to reduce food waste.",
+    "attendedEvents": false, "eventAttendanceStatus": "No public event participation verified", "previousEvents": [],
+    "relevanceToFoundersConnect": "Direct fit for circular consumer businesses, food-waste reduction, farmer supply chains and sustainable product design.",
+    "sourceLinks": [
+      { "label": "The Misfits founder and team page", "url": "https://mymisfits.in/pages/the-team" },
+      { "label": "The Misfits company profile", "url": "https://in.linkedin.com/company/bethemisfits" },
+      { "label": "eChai Jaipur D2C founder directory", "url": "https://echai.ventures/jaipur/d2c" }
+    ],
+    "tags": ["Food & Beverage", "Circular Economy", "Jaipur research"], "relevanceScore": 75,
+    "researchNotes": "Company page identifies Aditi Jhala as founder; its Jaipur base and upcycling model are confirmed by its public company profile."
+  }
+);

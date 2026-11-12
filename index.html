@@ -6,6 +6,7 @@
   <title>Founders Connect | Jaipur Startup Ecosystem & Founder Discovery</title>
   <meta name="description" content="Explore founder and startup research from Jaipur's Founders Connect team, with source notes and a profile for each lead.">
   <meta name="theme-color" content="#F8F9F6">
+  <link rel="manifest" href="./manifest.webmanifest">
 
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230F4C3A' stroke-width='2.2'><path d='M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2'/><circle cx='9' cy='7' r='4'/><path d='M22 21v-2a4 4 0 0 0-3-3.87'/><path d='M16 3.13a4 4 0 0 1 0 7.75'/></svg>">
@@ -24,6 +25,15 @@
   <link rel="stylesheet" href="./css/styles.css">
 </head>
 <body>
+
+  <div class="page-loader" role="status" aria-live="polite" aria-label="Loading founder directory">
+    <div class="loader-content">
+      <span class="loader-emblem" aria-hidden="true"><span></span></span>
+      <span class="loader-title">Founders Connect</span>
+      <span class="loader-caption">Preparing the Jaipur field guide</span>
+      <span class="loader-track" aria-hidden="true"><span></span></span>
+    </div>
+  </div>
 
   <!-- Floating Top Navigation Header (Apple / Stripe inspired) -->
   <header class="site-header">
@@ -101,7 +111,7 @@
     </div>
     <div class="directory-intro-index" aria-label="Research overview">
       <span class="intro-index-label">RESEARCH INDEX</span>
-      <strong>06</strong>
+      <strong>07</strong>
       <span>team research tracks</span>
       <span class="intro-index-date">21 NOVEMBER 2026</span>
     </div>
@@ -233,5 +243,11 @@
 
   <!-- JavaScript Application Controller -->
   <script type="module" src="./js/app.js"></script>
+  <script>
+    window.setTimeout(() => document.documentElement.classList.add('app-ready'), 8000);
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js', { scope: './' }).catch(() => {}), { once: true });
+    }
+  </script>
 </body>
 </html>

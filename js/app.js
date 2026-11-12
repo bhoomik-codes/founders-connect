@@ -116,6 +116,7 @@ function init() {
   renderTableView();
   setViewMode(state.viewMode);
   attachEventListeners();
+  requestAnimationFrame(() => document.documentElement.classList.add('app-ready'));
 }
 
 // Get every researched profile across the visible team tracks.
