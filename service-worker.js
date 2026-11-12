@@ -1,4 +1,4 @@
-const CACHE_NAME = 'founders-connect-shell-v1';
+const CACHE_NAME = 'founders-connect-shell-v2';
 const SHELL_ASSETS = [
   './',
   './index.html',
