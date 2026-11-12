@@ -1348,3 +1348,112 @@ html { scroll-padding-top: 100px; }
   .intro-index-label, .intro-index-date { grid-column: 2; margin: 0; }
   .directory-intro-index > span:nth-of-type(2) { grid-column: 2; }
 }
+
+/* Responsive layout refinements */
+@media (max-width: 1024px) {
+  .directory-intro { margin-inline: 20px; }
+  .main-workspace { padding: 20px; }
+  .workspace-controls-bar { align-items: stretch; }
+  .sector-filter-pills { flex: 1 1 100%; min-width: 0; }
+  .view-mode-toggle-group { align-self: flex-start; }
+  .reel-founder-card { flex: 0 0 100%; max-width: 900px; }
+  .gallery-grid-wrapper { grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr)); }
+}
+
+@media (max-width: 768px) {
+  .site-header { position: relative; }
+  .header-container {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 11px;
+    padding: 12px 16px 14px;
+  }
+  .brand-group { gap: 10px; }
+  .brand-emblem { width: 36px; height: 36px; }
+  .header-search-wrap { width: 100%; }
+  .header-search-bar { min-height: 44px; }
+  .header-search-input { min-width: 0; font-size: .82rem; }
+  .header-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    width: 100%;
+  }
+  .event-status-pill { grid-column: 1 / -1; justify-content: center; min-height: 34px; }
+  .header-actions .btn-pill-primary,
+  .header-actions .btn-pill-secondary { min-height: 42px; justify-content: center; padding-inline: 10px; }
+
+  .directory-intro { margin: 10px 12px 0; padding: 28px 22px; gap: 22px; }
+  .directory-intro h1 { font-size: clamp(2.45rem, 8.8vw, 4rem); }
+  .directory-intro p { max-width: 48ch; font-size: .86rem; }
+  .directory-intro-index { width: 100%; }
+
+  .pod-stories-bar { padding: 10px 0; }
+  .pod-stories-container { padding-inline: 12px; gap: 10px; overscroll-behavior-x: contain; }
+  .pod-dock-label { padding-right: 10px; font-size: .58rem; }
+  .fellow-story-pill { min-height: 50px; gap: 8px; padding: 5px 10px 5px 5px; }
+  .fellow-story-avatar-wrap { width: 34px; height: 34px; flex: 0 0 34px; }
+  .fellow-story-name { font-size: .76rem; }
+  .fellow-story-focus { font-size: .62rem; }
+
+  .main-workspace { gap: 16px; padding: 16px 14px 24px; }
+  .workspace-controls-bar { gap: 10px; }
+  .sector-filter-pills { width: 100%; margin-inline: -2px; padding: 2px 2px 7px; scroll-snap-type: x proximity; }
+  .filter-chip-btn { min-height: 38px; padding: 7px 12px; scroll-snap-align: start; }
+  .view-mode-toggle-group { width: 100%; align-self: stretch; }
+  .view-mode-btn { flex: 1 1 0; min-height: 40px; justify-content: center; padding-inline: 6px; font-size: .7rem; white-space: nowrap; }
+
+  .reels-stage-wrapper { min-width: 0; }
+  .story-progress-strip { gap: 5px; }
+  .reels-carousel-track-container { padding-inline: 0; }
+  .reel-founder-card { width: 100%; flex-basis: 100%; margin: 0; border-radius: 10px; }
+  .reel-hero-column { min-height: clamp(260px, 52svh, 400px); }
+  .reel-portrait-image { min-height: inherit; }
+  .reel-portrait-top-badges { top: 12px; left: 12px; right: 12px; gap: 6px; align-items: flex-start; }
+  .reel-metric-pill { max-width: 55%; text-align: right; }
+  .reel-portrait-bottom-info { left: 18px; right: 18px; bottom: 18px; }
+  .reel-founder-title-white { font-size: clamp(1.8rem, 8vw, 2.7rem); line-height: 1; overflow-wrap: anywhere; }
+  .reel-location-row { font-size: .68rem; }
+  .reel-designation-white { font-size: .82rem; }
+  .reel-editorial-column { min-width: 0; padding: 18px; gap: 16px; }
+  .reel-editorial-head { align-items: flex-start; flex-wrap: wrap; gap: 10px; }
+  .reel-company-identity { min-width: 0; }
+  .reel-company-name-row { flex-wrap: wrap; gap: 8px; }
+  .reel-company-name { overflow-wrap: anywhere; }
+  .reel-fellow-attribution { font-size: .68rem; }
+  .reel-sector-tag { max-width: 100%; }
+  .reel-bio-text, .reel-business-model-box, .reel-relevance-text { font-size: .84rem; line-height: 1.65; }
+  .reel-card-footer { align-items: flex-start; flex-direction: column; gap: 14px; }
+  .reel-social-group { width: 100%; flex-wrap: wrap; row-gap: 8px; }
+  .carousel-keyboard-hint { flex-wrap: wrap; gap: 7px 10px; padding: 0 4px; font-size: .62rem; text-align: center; }
+
+  .gallery-grid-wrapper { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .gallery-image-frame { height: clamp(210px, 58vw, 330px); }
+  .gallery-card-body { padding: 16px; }
+  .table-view-wrapper { border-radius: 8px; }
+  .editorial-table { min-width: 820px; }
+  .editorial-table th, .editorial-table td { padding: 12px; }
+
+  .slideover-panel { width: 100%; max-width: none; border-radius: 0; }
+  .slideover-header { padding: 14px 16px; }
+  .slideover-body { padding: 18px 16px; gap: 18px; }
+  .toast-badge { left: 12px; right: 12px; bottom: 12px; width: auto; text-align: center; }
+}
+
+@media (max-width: 420px) {
+  .header-container { padding-inline: 12px; }
+  .brand-subline { font-size: .64rem; }
+  .brand-badge { font-size: .58rem; padding: 3px 6px; }
+  .header-actions .btn-pill-primary,
+  .header-actions .btn-pill-secondary { font-size: .68rem; }
+  .directory-intro { padding: 24px 18px; }
+  .intro-eyebrow { font-size: .58rem; }
+  .directory-intro h1 { font-size: clamp(2.2rem, 10vw, 2.8rem); }
+  .directory-intro p { font-size: .8rem; }
+  .main-workspace { padding-inline: 10px; }
+  .reel-editorial-column { padding: 15px; }
+  .reel-lead-badge, .reel-metric-pill { font-size: .59rem; }
+  .reel-founder-title-white { font-size: clamp(1.65rem, 8.5vw, 2.25rem); }
+  .view-mode-btn { font-size: .64rem; gap: 4px; }
+  .view-mode-btn svg { width: 12px; height: 12px; }
+}
