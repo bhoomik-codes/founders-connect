@@ -7,7 +7,7 @@ import { EVENT_DETAILS, SECTORS, TEAM_MEMBERS, FOUNDERS_DATA } from './founders-
 
 // Application State
 const state = {
-  currentFellowId: 'bhoomik', // Active pod fellow ID
+  currentFellowId: 'sameeksha', // Open on the first newly submitted team track
   currentLeadIndex: 0,        // Active lead index (0 to 9)
   viewMode: 'reels',          // 'reels' | 'gallery' | 'table'
   selectedSector: 'All Sectors',
@@ -61,11 +61,18 @@ const elements = {
 };
 
 // SVG Image fallback helper
-window.handleImageError = function(img, name) {
+window.handleImageError = function(img) {
   img.onerror = null;
-  const initials = (name || 'FC').split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
-  img.src = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="750" viewBox="0 0 600 750"><rect width="100%" height="100%" fill="%23E7F2EE"/><text x="50%" y="50%" font-family="Plus Jakarta Sans, sans-serif" font-size="110" font-weight="800" fill="%230F4C3A" dominant-baseline="middle" text-anchor="middle">${initials}</text></svg>`;
+  const initials = (img.alt || 'FC').split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="750" viewBox="0 0 600 750"><rect width="100%" height="100%" fill="#E7F2EE"/><text x="50%" y="50%" font-family="sans-serif" font-size="110" font-weight="700" fill="#0F4C3A" dominant-baseline="middle" text-anchor="middle">${initials}</text></svg>`;
+  img.src = `data:image/svg+xml,${encodeURIComponent(svg)}`;
 };
+
+function imageMarkup(item, className, loading = '') {
+  const initials = item.avatarInitials || (item.founderName || item.name || 'FC').split(' ').map(part => part[0]).slice(0, 2).join('').toUpperCase();
+  if (!item.photoUrl) return `<div class="${className} founder-monogram" aria-label="Portrait unavailable for ${item.founderName || item.name}"><span>${initials}</span></div>`;
+  return `<img src="${item.photoUrl}" alt="${item.founderName || item.name}" class="${className}" ${loading} onerror="window.handleImageError(this)" />`;
+}
 
 // URL Parameter Deep-Linking
 function parseUrlParameters() {
@@ -81,7 +88,7 @@ function parseUrlParameters() {
     }
     if (lead) {
       const num = parseInt(lead, 10);
-      if (!isNaN(num) && num >= 1 && num <= 10) {
+      if (!isNaN(num) && num >= 1 && num <= (FOUNDERS_DATA[state.currentFellowId] || []).length) {
         state.currentLeadIndex = num - 1;
       }
     }
@@ -111,7 +118,7 @@ function init() {
   attachEventListeners();
 }
 
-// Get all leads flat (90 total)
+// Get every researched profile across the visible team tracks.
 function getAllLeadsFlat() {
   let list = [];
   Object.keys(FOUNDERS_DATA).forEach(fellowId => {
@@ -120,7 +127,7 @@ function getAllLeadsFlat() {
   return list;
 }
 
-// Get active fellow's leads (10 leads)
+// Get the active researcher's available profiles.
 function getActiveFellowLeads() {
   return FOUNDERS_DATA[state.currentFellowId] || [];
 }
@@ -143,11 +150,11 @@ function renderPodStories() {
         title="${fellow.name} • ${fellow.focus}"
       >
         <div class="fellow-story-avatar-wrap">
-          <img src="${fellow.photoUrl}" alt="${fellow.name}" class="fellow-story-avatar" loading="lazy" />
+          ${imageMarkup(fellow, 'fellow-story-avatar', 'loading="lazy"')}
         </div>
         <div class="fellow-story-meta">
           <span class="fellow-story-name">${fellow.name}</span>
-          <span class="fellow-story-focus">${fellow.focus.split('&')[0].trim()} • <strong>${leads.length}/10</strong></span>
+          <span class="fellow-story-focus">${fellow.focus.split('&')[0].trim()} • <strong>${leads.length} profiles</strong></span>
         </div>
       </div>
     `;
@@ -240,7 +247,7 @@ function renderReelsCarousel() {
       
       <!-- Card Left: Portrait, Badges & White Title Overlay -->
       <div class="reel-hero-column">
-        <img src="${lead.photoUrl}" alt="${lead.founderName}" class="reel-portrait-image" />
+        ${imageMarkup(lead, 'reel-portrait-image')}
         <div class="reel-portrait-gradient-overlay"></div>
 
         <div class="reel-portrait-top-badges">
@@ -266,10 +273,10 @@ function renderReelsCarousel() {
           <div class="reel-company-identity">
             <div class="reel-company-name-row">
               <span class="reel-company-name">${lead.companyName}</span>
-              <a href="${lead.website}" target="_blank" rel="noopener noreferrer" class="reel-company-link-btn" title="Visit company website">
+              ${lead.website ? `<a href="${lead.website}" target="_blank" rel="noopener noreferrer" class="reel-company-link-btn" title="Visit company website">
                 <span>Website</span>
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>
-              </a>
+              </a>` : ''}
             </div>
             <span class="reel-fellow-attribution">Researched by <strong>${lead.fellowName}</strong> for Founders Connect</span>
           </div>
@@ -280,7 +287,7 @@ function renderReelsCarousel() {
         <div class="reel-story-section">
           <span class="reel-section-label">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            Company Vision & Jaipur Roots
+            Company & Regional Context
           </span>
           <p class="reel-bio-text">${lead.companySummary || lead.businessModel}</p>
         </div>
@@ -305,9 +312,9 @@ function renderReelsCarousel() {
         <!-- Card Footer -->
         <div class="reel-card-footer">
           <div class="reel-social-group">
-            <a href="${lead.linkedinUrl}" target="_blank" rel="noopener noreferrer" class="social-circle-btn" title="LinkedIn Profile" aria-label="LinkedIn Profile">
+            ${lead.linkedinUrl ? `<a href="${lead.linkedinUrl}" target="_blank" rel="noopener noreferrer" class="social-circle-btn" title="LinkedIn Profile" aria-label="LinkedIn Profile">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-            </a>
+            </a>` : ''}
             <span style="font-size: 0.74rem; color: var(--text-muted); font-family: var(--font-mono); margin-left: 4px;">
               Contact: ${lead.publicContact.split('/')[0].trim()}
             </span>
@@ -367,7 +374,7 @@ function renderGalleryGrid() {
   elements.galleryGridWrapper.innerHTML = leads.map(lead => `
     <article class="gallery-founder-card" data-gallery-founder-id="${lead.id}">
       <div class="gallery-image-frame">
-        <img src="${lead.photoUrl}" alt="${lead.founderName}" class="gallery-founder-img" loading="lazy" />
+        ${imageMarkup(lead, 'gallery-founder-img', 'loading="lazy"')}
         <span class="reel-lead-badge" style="position: absolute; top: 12px; left: 12px;">${lead.keyMetric || lead.sector}</span>
       </div>
       <div class="gallery-card-body">
@@ -420,7 +427,7 @@ function renderTableView() {
       <td style="font-family: var(--font-mono); font-size: 0.76rem; color: var(--text-muted);">#${idx + 1}</td>
       <td>
         <div style="display: flex; align-items: center; gap: 10px;">
-          <img src="${lead.photoUrl}" alt="${lead.founderName}" style="width: 34px; height: 34px; border-radius: var(--radius-sm); object-fit: cover;" />
+          ${imageMarkup(lead, 'table-founder-avatar')}
           <div>
             <div style="font-weight: 800; color: var(--text-primary);">${lead.founderName}</div>
             <div style="font-size: 0.72rem; color: var(--text-muted);">${lead.designation}</div>
@@ -488,7 +495,7 @@ function openSlideoverDossier(lead) {
   elements.slideoverContentBody.innerHTML = `
     <!-- Top Identity Box -->
     <div style="display: flex; gap: 16px; align-items: flex-start; padding-bottom: 20px; border-bottom: 1px solid var(--border-subtle);">
-      <img src="${lead.photoUrl}" alt="${lead.founderName}" style="width: 76px; height: 76px; border-radius: var(--radius-md); object-fit: cover; box-shadow: var(--shadow-card);" />
+      ${imageMarkup(lead, 'slideover-founder-avatar')}
       <div>
         <h2 style="font-size: 1.45rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em;">${lead.founderName}</h2>
         <div style="font-size: 0.86rem; color: var(--color-emerald); font-weight: 600;">${lead.designation} • <strong>${lead.companyName}</strong></div>
@@ -561,10 +568,10 @@ function openSlideoverDossier(lead) {
     <!-- Verification Sources -->
     <div style="display: flex; flex-direction: column; gap: 8px;">
       <strong style="font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted);">
-        Verified Information Sources
+        Research Sources
       </strong>
       <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-        ${(lead.sourceLinks || []).map(s => `
+        ${(lead.sourceLinks || []).filter(s => s.url).map(s => `
           <a href="${s.url}" target="_blank" rel="noopener noreferrer" class="btn-pill-secondary" style="font-size: 0.74rem; padding: 4px 10px;">
             ${s.label} ↗
           </a>
@@ -574,8 +581,8 @@ function openSlideoverDossier(lead) {
 
     <!-- Bottom Actions -->
     <div style="display: flex; gap: 10px; justify-content: flex-end; padding-top: 14px; border-top: 1px solid var(--border-subtle); margin-top: auto;">
-      <a href="${lead.linkedinUrl}" target="_blank" rel="noopener noreferrer" class="btn-pill-secondary">LinkedIn Profile ↗</a>
-      <a href="${lead.website}" target="_blank" rel="noopener noreferrer" class="btn-pill-secondary">Visit Website ↗</a>
+      ${lead.linkedinUrl ? `<a href="${lead.linkedinUrl}" target="_blank" rel="noopener noreferrer" class="btn-pill-secondary">LinkedIn Profile ↗</a>` : ''}
+      ${lead.website ? `<a href="${lead.website}" target="_blank" rel="noopener noreferrer" class="btn-pill-secondary">Visit Website ↗</a>` : ''}
       <button onclick="document.getElementById('slideover-modal-backdrop').classList.remove('open');" class="btn-pill-primary">Done</button>
     </div>
   `;
@@ -628,7 +635,7 @@ function handleSpotlightSearch(query) {
   elements.searchResultsTray.innerHTML = matches.slice(0, 8).map(m => `
     <div class="search-result-row" data-jump-fellow="${m.fellowId}" data-jump-lead-id="${m.id}">
       <div class="search-result-left">
-        <img src="${m.photoUrl}" alt="${m.founderName}" class="search-result-photo" />
+        ${imageMarkup(m, 'search-result-photo')}
         <div>
           <div class="search-result-title">${m.founderName}</div>
           <div class="search-result-desc">${m.designation} • <strong>${m.companyName}</strong></div>
@@ -909,10 +916,13 @@ function attachEventListeners() {
       e.preventDefault();
       if (elements.spotlightSearchInput) elements.spotlightSearchInput.focus();
     } else if (e.key >= '1' && e.key <= '9') {
-      state.currentLeadIndex = parseInt(e.key, 10) - 1;
-      renderReelsCarousel();
-    } else if (e.key === '0') {
-      state.currentLeadIndex = 9; // 10th lead
+      const targetIndex = parseInt(e.key, 10) - 1;
+      if (targetIndex < getActiveFellowLeads().length) {
+        state.currentLeadIndex = targetIndex;
+        renderReelsCarousel();
+      }
+    } else if (e.key === '0' && getActiveFellowLeads().length >= 10) {
+      state.currentLeadIndex = 9;
       renderReelsCarousel();
     }
   });
